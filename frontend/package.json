@@ -12,6 +12,8 @@
     "vue": "^3.5.39"
   },
   "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
     "@vitejs/plugin-vue": "^6.0.7",
     "autoprefixer": "^10.5.3",
     "postcss": "^8.5.19",
