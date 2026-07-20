@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-TW">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>FlowForm IT Seminar - Step 3: 設定帳號</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#c2c6d3",
+                        "secondary-fixed": "#e1e0ff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#2d323c",
+                        "surface-container": "#edeeef",
+                        "gradient-end": "#2B86C5",
+                        "surface-container-highest": "#e1e3e4",
+                        "tertiary-fixed-dim": "#ffb2b7",
+                        "on-tertiary-fixed": "#40000d",
+                        "on-secondary-fixed": "#07006c",
+                        "secondary": "#4648d4",
+                        "inverse-primary": "#c2c6d3",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-fixed": "#ffdadb",
+                        "tertiary-container": "#6a001c",
+                        "outline": "#76777c",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary": "#43000e",
+                        "primary": "#181d26",
+                        "tag-bg": "#F1F5F9",
+                        "primary-fixed": "#dee2f0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#959aa6",
+                        "surface-tint": "#595e69",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#6063ee",
+                        "background": "#f8f9fa",
+                        "on-primary-fixed": "#171c25",
+                        "outline-variant": "#c6c6cc",
+                        "surface-container-low": "#f3f4f5",
+                        "on-background": "#191c1d",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#45474b",
+                        "gradient-middle": "#784BA0",
+                        "on-tertiary-fixed-variant": "#92002a",
+                        "surface": "#f8f9fa",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "success": "#10B981",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-primary-fixed-variant": "#424751",
+                        "error": "#EF4444",
+                        "on-primary": "#ffffff",
+                        "gradient-start": "#FF3CAC",
+                        "on-tertiary-container": "#ff6678",
+                        "surface-dim": "#d9dadb",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-sm": "8px",
+                        "container-max": "800px",
+                        "stack-lg": "48px",
+                        "stack-md": "24px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .gradient-top-bar {
+            background: linear-gradient(90deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
+            height: 8px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .pulse-secondary {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .7;
+                transform: scale(1.1);
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #E2E8F0;
+        }
+
+        .loading-dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+
+            0%,
+            20% {
+                content: '.';
+            }
+
+            40% {
+                content: '..';
+            }
+
+            60% {
+                content: '...';
+            }
+
+            80%,
+            100% {
+                content: '';
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background font-body-md text-on-surface antialiased">
+    <div class="gradient-top-bar"></div>
+    <!-- TopAppBar -->
+    <header class="bg-surface shadow-sm sticky top-2 z-50">
+        <div class="flex justify-between items-center w-full px-gutter h-16 max-w-[800px] mx-auto">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-2xl">bubble_chart</span>
+                <h1 class="font-headline-md text-headline-md font-black text-primary tracking-tight">FlowForm</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-on-surface-variant hover:text-secondary transition-colors p-2 rounded-full">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="max-w-[800px] mx-auto px-margin-mobile md:px-gutter pt-stack-lg pb-24">
+        <!-- Registration Hero Branding (Inspired by image) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md mb-stack-lg">
+            <div
+                class="relative group overflow-hidden rounded-xl h-48 md:h-64 shadow-sm transition-all hover:shadow-md">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    data-alt="Abstract digital artwork for an IT seminar featuring energetic, multi-chromatic geometric shapes like circles, rectangles, and fluid lines. The color palette is vibrant with magenta, orange, and blue hues over a soft peach and lavender background, reflecting a creative 'Agentic AI' theme. The lighting is soft and ambient with a slight grainy texture, mimicking a modern generative art aesthetic."
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAuFrkFN_QeRcuzJHz_uUYAlOkvwrfI9ZJEZ8exIJ57E61fSlz25WuMLLilU2C5aFRz-hN38nWfl7BWRctDA77_YVGUK7-u9cDkRfDuGCZ97iAwwo1JwZy6JU1PezGodZAlecB_sNYxxnxSexXOYSQ6yTSCJpPIUHyB-qDaNfx5v1HxTouMUhoNcWkxh7cFDNGSrpyj8CvG1d4RCjKRNAkeEZHzrwBbu9szesqYjLPVf7Hzwu3yh3pM9hEdHwvSqNUJ3j52rsa3UEg')">
+                </div>
+                <div class="absolute top-4 left-4">
+                    <div
+                        class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-outline-variant shadow-sm">
+                        <p class="font-label-mono text-label-mono text-primary">Agentic AI</p>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="relative group overflow-hidden rounded-xl h-48 md:h-64 shadow-sm transition-all hover:shadow-md">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    data-alt="Vibrant generative digital art with fluid, swirling streams of neon colors including lime green, hot pink, and royal blue. The composition is dynamic and abstract, suggesting the complexity and power of Artificial Intelligence (AI). The overall aesthetic is sleek and high-energy, with smooth color transitions and a futuristic vibe that complements a professional IT event branding."
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGMHWIxSZpxq8idrv7CIfeAlEjpS01Mc7rErgtKI7eN-nxY64ojX4k4-PAAe9JW-4m-F7fMly_nfgAYZpglE5IzESKClmERRQMCd5ltM_wAkGbVnFCO-ku0lsqtxYTM30JO2euYlMvbD-IBl_ES0Vekcw6_4TH2ocA3PHfKAHE4beR6jHwlEfFWbaM-y5AbF5b7DcVaYJkRj3Cn7zvjSdGM-R-24QqrrsqhdXnGKxYH6MNoISY2o54IKBYXk_cWayPJ9dVRj7CH3I')">
+                </div>
+                <div class="absolute top-4 left-4">
+                    <div
+                        class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-outline-variant shadow-sm">
+                        <p class="font-label-mono text-label-mono text-primary">Artificial Intelligence (AI)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Progress Bar -->
+        <div class="mb-stack-lg max-w-xl mx-auto">
+            <div class="flex items-center justify-between relative">
+                <!-- Line background -->
+                <div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-high -translate-y-1/2 z-0">
+                </div>
+                <!-- Progress fill -->
+                <div
+                    class="absolute top-1/2 left-0 w-1/2 h-[2px] bg-secondary -translate-y-1/2 z-0 transition-all duration-500">
+                </div>
+                <!-- Step 1 -->
+                <div class="relative z-10 flex flex-col items-center gap-2">
+                    <div
+                        class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-sm shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">check</span>
+                    </div>
+                    <span class="hidden md:block font-label-sm text-label-sm text-on-surface-variant">基本資料</span>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative z-10 flex flex-col items-center gap-2">
+                    <div
+                        class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-sm shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">check</span>
+                    </div>
+                    <span class="hidden md:block font-label-sm text-label-sm text-on-surface-variant">研討會選擇</span>
+                </div>
+                <!-- Step 3 (Active) -->
+                <div class="relative z-10 flex flex-col items-center gap-2">
+                    <div
+                        class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-secondary/20 pulse-secondary">
+                        3
+                    </div>
+                    <span class="font-label-sm text-label-sm text-primary font-bold">設定帳號</span>
+                </div>
+                <!-- Step 4 -->
+                <div class="relative z-10 flex flex-col items-center gap-2">
+                    <div
+                        class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold text-sm">
+                        4
+                    </div>
+                    <span class="hidden md:block font-label-sm text-label-sm text-on-surface-variant">確認送出</span>
+                </div>
+            </div>
+        </div>
+        <!-- Registration Form Container -->
+        <div class="max-w-[600px] mx-auto glass-card p-gutter md:p-stack-lg rounded-xl shadow-sm">
+            <header class="mb-stack-md text-center">
+                <h2 class="font-headline-lg text-headline-lg text-primary mb-2">設定您的登入帳號</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">請設定一組用於管理您的研討會參與和證書下載的帳號密碼。</p>
+            </header>
+            <form class="space-y-stack-md">
+                <!-- Username Field with Loading State -->
+                <div class="space-y-stack-sm">
+                    <label class="block font-body-md text-body-md font-bold text-primary" for="username">使用者名稱</label>
+                    <div class="relative group">
+                        <input
+                            class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
+                            id="username" placeholder="請輸入欲使用的帳號" type="text" />
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <div
+                                class="animate-spin h-4 w-4 border-2 border-secondary border-t-transparent rounded-full">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="font-label-mono text-label-mono text-secondary flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px]">sync</span>
+                        <span class="loading-dots">檢查帳號是否可用中</span>
+                    </p>
+                </div>
+                <!-- Password Field -->
+                <div class="space-y-stack-sm">
+                    <label class="block font-body-md text-body-md font-bold text-primary" for="password">密碼</label>
+                    <div class="relative group">
+                        <input
+                            class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
+                            id="password" placeholder="至少 8 個字元，含英文字母及數字" type="password" />
+                        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant" type="button">
+                            <span class="material-symbols-outlined">visibility_off</span>
+                        </button>
+                    </div>
+                    <div class="flex gap-1 mt-2">
+                        <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
+                        <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
+                        <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
+                        <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
+                    </div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">建議包含特殊符號以增強安全性</p>
+                </div>
+                <!-- Confirm Password Field -->
+                <div class="space-y-stack-sm">
+                    <label class="block font-body-md text-body-md font-bold text-primary"
+                        for="confirm_password">再次確認密碼</label>
+                    <input
+                        class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
+                        id="confirm_password" placeholder="請再次輸入密碼" type="password" />
+                </div>
+                <!-- Document Text Section (Placeholder for DOCUMENT_6 context) -->
+                <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30 mt-stack-lg">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary-fixed-dim shrink-0">info</span>
+                        <div>
+                            <p class="font-label-mono text-label-mono text-on-surface-variant leading-relaxed">
+                                根據 FlowForm IT Seminar 隱私權保護條款，您的帳號資訊將受到工業級加密保護。請務必牢記您的密碼，系統管理員無法查看您的原始密碼。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row items-center gap-stack-sm pt-stack-md">
+                    <button
+                        class="w-full sm:w-1/3 h-14 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary-container hover:text-on-primary transition-all active:scale-95"
+                        type="button">
+                        上一步
+                    </button>
+                    <button
+                        class="w-full sm:w-2/3 h-14 bg-primary text-on-primary font-bold rounded-lg shadow-md hover:bg-primary/90 transition-all active:scale-95 flex items-center justify-center gap-2"
+                        type="submit">
+                        下一步：確認送出
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- Identity Markers (Capsule Tags) -->
+        <div class="mt-stack-lg flex flex-wrap justify-center gap-2">
+            <span class="bg-tag-bg px-4 py-1.5 rounded-full font-label-mono text-label-mono text-on-surface-variant">IT
+                Professional</span>
+            <span
+                class="bg-tag-bg px-4 py-1.5 rounded-full font-label-mono text-label-mono text-on-surface-variant">DevOps
+                Engineer</span>
+            <span
+                class="bg-tag-bg px-4 py-1.5 rounded-full font-label-mono text-label-mono text-on-surface-variant">Cloud
+                Solutions</span>
+            <span
+                class="bg-tag-bg px-4 py-1.5 rounded-full font-label-mono text-label-mono text-on-surface-variant">Student
+                Advocate</span>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="bg-surface-container-low dark:bg-primary-container full-width py-stack-md border-t border-outline-variant dark:border-primary">
+        <div
+            class="flex flex-col md:flex-row justify-between items-center w-full px-gutter max-w-[800px] mx-auto gap-stack-sm">
+            <div class="flex flex-col items-center md:items-start gap-1">
+                <span
+                    class="font-headline-md text-headline-md text-primary dark:text-on-primary font-black tracking-tight">FlowForm</span>
+                <p class="font-label-mono text-label-mono text-on-surface-variant dark:text-on-primary-container">© 2026
+                    FlowForm IT Seminar. All rights reserved.</p>
+            </div>
+            <div class="flex gap-stack-md">
+                <a class="font-label-mono text-label-mono text-on-surface-variant dark:text-on-primary-container hover:text-secondary transition-colors"
+                    href="#">Privacy Policy</a>
+                <a class="font-label-mono text-label-mono text-on-surface-variant dark:text-on-primary-container hover:text-secondary transition-colors"
+                    href="#">Terms of Service</a>
+                <a class="font-label-mono text-label-mono text-on-surface-variant dark:text-on-primary-container hover:text-secondary transition-colors"
+                    href="#">Support</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Micro-interaction for loading state visual feedback
+        document.getElementById('username').addEventListener('input', function (e) {
+            const loadingIndicator = document.querySelector('.animate-spin');
+            const feedbackText = document.querySelector('.loading-dots');
+
+            if (e.target.value.length > 0) {
+                loadingIndicator.classList.remove('hidden');
+                feedbackText.classList.remove('hidden');
+            } else {
+                loadingIndicator.classList.add('hidden');
+                feedbackText.classList.add('hidden');
+            }
+        });
+
+        // Toggle password visibility logic
+        document.querySelectorAll('button span:contains("visibility")').forEach(btn => {
+            btn.parentElement.addEventListener('click', function () {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('.material-symbols-outlined');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.innerText = 'visibility';
+                } else {
+                    input.type = 'password';
+                    icon.innerText = 'visibility_off';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

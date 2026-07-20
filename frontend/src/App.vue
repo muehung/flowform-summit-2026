@@ -1,7 +1,13 @@
 <script setup>
-import Step01 from './components/step01.vue'
 </script>
 
 <template>
-  <Step01 />
+  <!-- Top Navigation Accent -->
+    <div class="h-2 w-full gradient-accent"></div>
+
+    <!-- navbar -->
+    <Navbar />
+    <router-view />
+    <!-- Footer -->
+    <Footer />
 </template>
