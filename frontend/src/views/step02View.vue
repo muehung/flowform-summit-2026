@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref } from 'vue'
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
 
-// default form 以防屬性、欄位增減導致壞掉
-const formDefault = {
+ const formDefault = {
     company: '',
     department: '',
     jobTitle: '',
@@ -12,6 +11,7 @@ const formDefault = {
 };
 
 const form = ref({...formDefault});
+
 const errors = ref({
     company: '',
     department: '',
@@ -21,39 +21,17 @@ const errors = ref({
 
 const inputFirstFocus = ref(null);
 
-onMounted(()=>{
-    // 如果有存，先getItem
-    const storageData = localStorage.getItem("flowform2026");
-    console.log("1", storageData)
-    if(storageData){
-        try {
-            form.value = JSON.parse(storageData)
-            console.log("2", storageData)
-        } catch(e) {
-            console.log("解析 localStorage失敗")
-        }
+const handleInterests = function (){
+
+}
+
+function validateForm(){
+    if(form.value.company == ''){
+        errors.value.company = '請填寫 公司/組織 名稱';
+    } else {
+        form.value.company == ''
     }
-    // 如果沒存，setItem，轉成JSON字串
-    localStorage.setItem("flowform2026-1", JSON.stringify(form.value));
-    inputFirstFocus.value.focus();
-});
-
-//監聽 form 有變化就存
-watch(form.value ,()=>{
-    // JSON字串轉物件存入
-    form.value = JSON.parse(localStorage.getItem("flowform2026"))
-    // 轉自json字串存localStorage
-    localStorage.setItem("flowform2026-2", JSON.stringify(form.value))
-    console.log("3", form.value)
-}, {deep: true})
-
-// function validateForm(){
-//     if(form.value.company == ''){
-//         errors.value.company = '請填寫 公司/組織 名稱';
-//     } else {
-//         form.value.company == ''
-//     }
-// }
+}
 
 </script>
 <template>
@@ -156,8 +134,11 @@ watch(form.value ,()=>{
                     <!-- Department Input -->
                     <div class="flex flex-col gap-stack-sm">
                         <label class="font-body-md font-bold text-on-surface" for="department">所屬部門</label>
+                        {{ form.department }}
                         <div class="relative">
                             <select
+                             :value="form.department"
+                             @change="form.department = $event.target.value"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none"
                                 id="department">
                                 <option disabled="" selected="" value="">請選擇部門...</option>
@@ -184,7 +165,7 @@ watch(form.value ,()=>{
                 <div class="flex flex-col gap-stack-sm">
                     <label class="font-body-md font-bold text-on-surface">感興趣的技術領域 (可多選)</label>
                     <div class="flex flex-wrap gap-2 mt-1">
-                        <button :value="form.interests" @click=""
+                        <button :value="form.interests" @click="handleInterests"
                             class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-2 group"
                             type="button">
                             <span
