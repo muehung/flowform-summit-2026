@@ -18,9 +18,9 @@ const errors = ref({
     identity: '',
 })
 
-const inputNameFocus = ref(null);
+const inputFirstFocus = ref(null);
 onMounted(()=>{
-    inputNameFocus.value.focus();
+    inputFirstFocus.value.focus();
 })
 
 function validateForm() {
@@ -147,7 +147,7 @@ function cancelRegistration() {
                         <input
                             :value="form.name"
                             @input="form.name = $event.target.value"
-                            ref="inputNameFocus"
+                            ref="inputFirstFocus"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
                             id="name" name="name" placeholder="請輸入完整姓名" type="text" />
                             <span v-if="errors.name" class="text-red-500">{{errors.name}}</span>
