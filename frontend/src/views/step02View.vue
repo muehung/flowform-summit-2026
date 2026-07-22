@@ -1,7 +1,59 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
+
+// default form 以防屬性、欄位增減導致壞掉
+const formDefault = {
+    company: '',
+    department: '',
+    jobTitle: '',
+    interests: []
+};
+
+const form = ref({...formDefault});
+const errors = ref({
+    company: '',
+    department: '',
+    jobTitle: '',
+    interests: ''
+});
+
+const inputFirstFocus = ref(null);
+
+onMounted(()=>{
+    // 如果有存，先getItem
+    const storageData = localStorage.getItem("flowform2026");
+    console.log("1", storageData)
+    if(storageData){
+        try {
+            form.value = JSON.parse(storageData)
+            console.log("2", storageData)
+        } catch(e) {
+            console.log("解析 localStorage失敗")
+        }
+    }
+    // 如果沒存，setItem，轉成JSON字串
+    localStorage.setItem("flowform2026-1", JSON.stringify(form.value));
+    inputFirstFocus.value.focus();
+});
+
+//監聽 form 有變化就存
+watch(form.value ,()=>{
+    // JSON字串轉物件存入
+    form.value = JSON.parse(localStorage.getItem("flowform2026"))
+    // 轉自json字串存localStorage
+    localStorage.setItem("flowform2026-2", JSON.stringify(form.value))
+    console.log("3", form.value)
+}, {deep: true})
+
+// function validateForm(){
+//     if(form.value.company == ''){
+//         errors.value.company = '請填寫 公司/組織 名稱';
+//     } else {
+//         form.value.company == ''
+//     }
+// }
 
 </script>
 <template>
@@ -84,15 +136,18 @@ import Footer from './../Components/FooterComponent.vue'
                 </div>
             </div>
             <!-- Form Fields -->
-            <form class="space-y-stack-md">
+            <form class="space-y-stack-md" @submit.prevent="submitGoNext">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
                     <!-- Company Input -->
                     <div class="flex flex-col gap-stack-sm">
                         <label class="font-body-md font-bold text-on-surface" for="company">公司/組織名稱</label>
                         <div class="relative">
-                            <input
+                            <input :value="form.company" @input="form.company = $event.target.value" ref="inputFirstFocus"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                                 id="company" placeholder="例如：FlowForm 科技" type="text" />
+
+                                <span v-if="errors.company" class="text-red-500">{{errors.company}}</span>
+
                             <span
                                 class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant">corporate_fare</span>
                         </div>
@@ -113,6 +168,7 @@ import Footer from './../Components/FooterComponent.vue'
                                 <option value="operation">維運管理 / Operations</option>
                                 <option value="other">其他</option>
                             </select>
+                            <span v-if="errors.department" class="text-red-500">{{errors.department}}</span>
                             <span
                                 class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">expand_more</span>
                         </div>
@@ -120,14 +176,15 @@ import Footer from './../Components/FooterComponent.vue'
                 </div>
                 <div class="flex flex-col gap-stack-sm">
                     <label class="font-body-md font-bold text-on-surface" for="job-title">職稱</label>
-                    <input
+                    <input :value="form.jobTitle" @input="form.jobTitle = $event.target.value"
                         class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                         id="job-title" placeholder="例如：資深開發工程師" type="text" />
+                        <span v-if="errors.jobTitle" class="text-red-500">{{errors.jobTitle}}</span>
                 </div>
                 <div class="flex flex-col gap-stack-sm">
                     <label class="font-body-md font-bold text-on-surface">感興趣的技術領域 (可多選)</label>
                     <div class="flex flex-wrap gap-2 mt-1">
-                        <button
+                        <button :value="form.interests" @click=""
                             class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-2 group"
                             type="button">
                             <span
