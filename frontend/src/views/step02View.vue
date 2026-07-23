@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
+import StepProgress from '../components/StepProgressComponent.vue';
+
 
  const formDefault = {
     company: '',
@@ -35,7 +37,6 @@ function validateForm(){
 
 </script>
 <template>
-    <!-- body以下 -->
     <!-- Top Navigation Accent -->
     <div class="h-2 w-full gradient-accent"></div>
 
@@ -43,46 +44,10 @@ function validateForm(){
     <Navbar />
 
     <main class="max-w-[800px] mx-auto px-margin-mobile md:px-gutter py-stack-lg min-h-[calc(100vh-128px)]">
-        <!-- Progress Bar -->
-        <div class="mb-stack-lg">
-            <div class="relative flex items-center justify-between">
-                <!-- Progress Line -->
-                <div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-highest -translate-y-1/2 -z-10">
-                </div>
-                <div
-                    class="absolute top-1/2 left-0 w-1/2 h-[2px] bg-secondary -translate-y-1/2 -z-10 transition-all duration-500">
-                </div>
-                <!-- Steps -->
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-md">
-                        <span class="material-symbols-outlined text-xl">check</span>
-                    </div>
-                    <span class="mt-2 font-label-mono text-label-mono text-secondary">基本資料</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-lg ring-4 ring-secondary/20 step-pulse">
-                        <span class="font-label-mono text-lg">2</span>
-                    </div>
-                    <span class="mt-2 font-label-mono text-label-mono text-secondary font-bold">身份資訊</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center">
-                        <span class="font-label-mono text-lg">3</span>
-                    </div>
-                    <span class="mt-2 font-label-mono text-label-mono text-on-surface-variant">專案需求</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center">
-                        <span class="font-label-mono text-lg">4</span>
-                    </div>
-                    <span class="mt-2 font-label-mono text-label-mono text-on-surface-variant">確認送出</span>
-                </div>
-            </div>
-        </div>
+        
+        <!-- step progress -->
+        <StepProgress :currentStep="2"/>
+
         <!-- Registration Content Card -->
         <div
             class="bg-surface-container-lowest rounded-xl border border-outline-variant p-gutter shadow-sm overflow-hidden">
@@ -150,8 +115,7 @@ function validateForm(){
                                 <option value="other">其他</option>
                             </select>
                             <span v-if="errors.department" class="text-red-500">{{errors.department}}</span>
-                            <span
-                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">expand_more</span>
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
                         </div>
                     </div>
                 </div>

@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import Navbar from '../components/NavbarComponent.vue'
 import Footer from '../components/FooterComponent.vue'
+import StepProgress from '../components/StepProgressComponent.vue';
 
 const form = ref({
     name: '',
@@ -85,48 +86,17 @@ function cancelRegistration() {
 
 </script>
 <template>
-    <main class="min-h-screen pt-stack-lg pb-stack-lg">
-        <div class="max-w-[800px] mx-auto px-margin-mobile md:px-0">
-            <!-- Progress Tracker -->
-            <div class="mb-stack-lg">
-                <div class="flex items-center justify-between relative mb-2">
-                    <!-- Progress Line Background -->
-                    <div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-high -translate-y-1/2 z-0">
-                    </div>
-                    <!-- Progress Line Active (Step 1 is 0%) -->
-                    <div
-                        class="absolute top-1/2 left-0 w-0 h-[2px] gradient-accent -translate-y-1/2 z-0 transition-all duration-500">
-                    </div>
-                    <!-- Steps -->
-                    <div class="z-10 flex flex-col items-center">
-                        <div
-                            class="w-10 h-10 rounded-full gradient-accent flex items-center justify-center text-white font-bold ring-4 ring-background pulse-secondary">
-                            1</div>
-                        <span class="font-label-sm text-label-sm mt-2 text-primary font-bold">填寫基本資料</span>
-                    </div>
-                    <div class="z-10 flex flex-col items-center">
-                        <div
-                            class="w-10 h-10 rounded-full bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center text-on-surface-variant font-bold ring-4 ring-background">
-                            2</div>
-                        <span
-                            class="font-label-sm text-label-sm mt-2 text-on-surface-variant hidden md:block">選擇場次</span>
-                    </div>
-                    <div class="z-10 flex flex-col items-center">
-                        <div
-                            class="w-10 h-10 rounded-full bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center text-on-surface-variant font-bold ring-4 ring-background">
-                            3</div>
-                        <span
-                            class="font-label-sm text-label-sm mt-2 text-on-surface-variant hidden md:block">確認訂單</span>
-                    </div>
-                    <div class="z-10 flex flex-col items-center">
-                        <div
-                            class="w-10 h-10 rounded-full bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center text-on-surface-variant font-bold ring-4 ring-background">
-                            4</div>
-                        <span
-                            class="font-label-sm text-label-sm mt-2 text-on-surface-variant hidden md:block">完成報名</span>
-                    </div>
-                </div>
-            </div>
+    <!-- Top Navigation Accent -->
+    <div class="h-2 w-full gradient-accent"></div>
+
+    <!-- navbar -->
+    <Navbar />
+    <main class="max-w-[800px] mx-auto px-margin-mobile md:px-gutter py-stack-lg min-h-[calc(100vh-128px)]">
+        
+        <!-- step progress -->
+        <StepProgress :currentStep="1"/>
+
+
             <!-- Hero/Header Visual -->
             <div class="mb-stack-lg rounded-xl overflow-hidden relative h-48 md:h-64 shadow-lg group">
                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="填寫基本資料"
@@ -193,8 +163,8 @@ function cancelRegistration() {
                                 <option value="other">其他 (Other)</option>
                             </select>
                             <span v-if="errors.identity" class="text-red-500">{{ errors.identity }}</span>
-                            <!-- <span
-                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">keyboard_arrow_down</span> -->
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">keyboard_arrow_down</span>
                         </div>
                     </div>
                     <!-- Form Action Buttons -->
@@ -214,15 +184,16 @@ function cancelRegistration() {
                     </div>
                 </form>
             </div>
-        </div>
+        
     </main>
     <!-- Top Navigation Accent -->
 
-
+    <!-- Footer -->
+    <Footer />
 </template>
 
 
-<style scoped>
+<!-- <style scoped>
 .gradient-accent {
     background: linear-gradient(90deg, #ff3cac 0%, #784ba0 50%, #2b86c5 100%);
 }
@@ -256,4 +227,4 @@ function cancelRegistration() {
         transform: scale(1.1);
     }
 }
-</style>
+</style> -->

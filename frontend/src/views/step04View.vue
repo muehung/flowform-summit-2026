@@ -2,58 +2,22 @@
 import { ref } from 'vue'
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
+import StepProgress from '../components/StepProgressComponent.vue';
 
 </script>
 <template>
-    <!-- body以下 -->
     <!-- Top Navigation Accent -->
     <div class="h-2 w-full gradient-accent"></div>
 
     <!-- navbar -->
     <Navbar />
 
-    <main class="flex-grow w-full max-w-[800px] mx-auto px-margin-mobile md:px-gutter py-stack-lg">
-        <!-- Step Progress Bar -->
-        <div class="mb-stack-lg relative">
-            <div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant -translate-y-1/2 z-0"></div>
-            <div class="relative z-10 flex justify-between items-center">
-                <!-- Step 1 -->
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-success text-on-primary flex items-center justify-center shadow-sm">
-                        <span class="material-symbols-outlined text-[20px]"
-                            style="font-variation-settings: 'FILL' 1;">check</span>
-                    </div>
-                    <span class="hidden md:block mt-2 font-label-sm text-label-sm text-on-surface-variant">基本資料</span>
-                </div>
-                <!-- Step 2 -->
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-success text-on-primary flex items-center justify-center shadow-sm">
-                        <span class="material-symbols-outlined text-[20px]"
-                            style="font-variation-settings: 'FILL' 1;">check</span>
-                    </div>
-                    <span class="hidden md:block mt-2 font-label-sm text-label-sm text-on-surface-variant">身份確認</span>
-                </div>
-                <!-- Step 3 -->
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-success text-on-primary flex items-center justify-center shadow-sm">
-                        <span class="material-symbols-outlined text-[20px]"
-                            style="font-variation-settings: 'FILL' 1;">check</span>
-                    </div>
-                    <span class="hidden md:block mt-2 font-label-sm text-label-sm text-on-surface-variant">帳號設定</span>
-                </div>
-                <!-- Step 4 Active -->
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-10 h-10 rounded-full bg-secondary text-on-primary flex items-center justify-center ring-4 ring-secondary/20 animate-pulse">
-                        <span class="font-label-mono text-label-mono">04</span>
-                    </div>
-                    <span class="hidden md:block mt-2 font-label-sm text-label-sm text-secondary font-bold">確認報名</span>
-                </div>
-            </div>
-        </div>
+    <main class="max-w-[800px] mx-auto px-margin-mobile md:px-gutter py-stack-lg min-h-[calc(100vh-128px)]">
+        
+        <!-- step progress -->
+        <StepProgress :currentStep="4"/>
+
+
         <!-- Section Title -->
         <section class="mb-stack-md text-center">
             <h2 class="font-headline-lg text-headline-lg text-primary mb-2">確認報名資料</h2>
@@ -91,7 +55,7 @@ import Footer from './../Components/FooterComponent.vue'
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <span class="font-label-sm text-on-surface-variant">報名身份</span>
-                        <span class="bg-tag-bg px-3 py-1 rounded-full font-label-mono text-label-sm text-primary">Senior
+                        <span class="bg-tag-bg px-3 py-1 rounded-full font-label-mono text-label-mono text-primary">Senior
                             Developer</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -116,7 +80,7 @@ import Footer from './../Components/FooterComponent.vue'
                     <div class="absolute inset-0 bg-primary/60 backdrop-blur-[2px]"></div>
                 </div>
                 <div class="relative z-10 p-stack-md h-full flex flex-col justify-end text-white">
-                    <div class="font-label-mono text-label-sm text-secondary-fixed mb-1 uppercase tracking-widest">IT
+                    <div class="font-label-mono text-label-mono text-secondary-fixed mb-1 uppercase tracking-widest">IT
                         Seminar 2026</div>
                     <h4 class="font-headline-lg text-headline-lg leading-tight">Agentic AI &amp; Future Infrastructure
                     </h4>

@@ -2,97 +2,28 @@
 import { ref } from 'vue'
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
+import StepProgress from '../components/StepProgressComponent.vue';
 
 </script>
 <template>
-    <!-- body以下 -->
     <!-- Top Navigation Accent -->
     <div class="h-2 w-full gradient-accent"></div>
 
     <!-- navbar -->
     <Navbar />
 
-    <main class="max-w-[800px] mx-auto px-margin-mobile md:px-gutter pt-stack-lg pb-24">
-        <!-- Registration Hero Branding (Inspired by image) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md mb-stack-lg">
-            <div
-                class="relative group overflow-hidden rounded-xl h-48 md:h-64 shadow-sm transition-all hover:shadow-md">
-                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                    data-alt="Abstract digital artwork for an IT seminar featuring energetic, multi-chromatic geometric shapes like circles, rectangles, and fluid lines. The color palette is vibrant with magenta, orange, and blue hues over a soft peach and lavender background, reflecting a creative 'Agentic AI' theme. The lighting is soft and ambient with a slight grainy texture, mimicking a modern generative art aesthetic."
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAuFrkFN_QeRcuzJHz_uUYAlOkvwrfI9ZJEZ8exIJ57E61fSlz25WuMLLilU2C5aFRz-hN38nWfl7BWRctDA77_YVGUK7-u9cDkRfDuGCZ97iAwwo1JwZy6JU1PezGodZAlecB_sNYxxnxSexXOYSQ6yTSCJpPIUHyB-qDaNfx5v1HxTouMUhoNcWkxh7cFDNGSrpyj8CvG1d4RCjKRNAkeEZHzrwBbu9szesqYjLPVf7Hzwu3yh3pM9hEdHwvSqNUJ3j52rsa3UEg')">
-                </div>
-                <div class="absolute top-4 left-4">
-                    <div
-                        class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-outline-variant shadow-sm">
-                        <p class="font-label-mono text-label-mono text-primary">Agentic AI</p>
-                    </div>
-                </div>
-            </div>
-            <div
-                class="relative group overflow-hidden rounded-xl h-48 md:h-64 shadow-sm transition-all hover:shadow-md">
-                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                    data-alt="Vibrant generative digital art with fluid, swirling streams of neon colors including lime green, hot pink, and royal blue. The composition is dynamic and abstract, suggesting the complexity and power of Artificial Intelligence (AI). The overall aesthetic is sleek and high-energy, with smooth color transitions and a futuristic vibe that complements a professional IT event branding."
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGMHWIxSZpxq8idrv7CIfeAlEjpS01Mc7rErgtKI7eN-nxY64ojX4k4-PAAe9JW-4m-F7fMly_nfgAYZpglE5IzESKClmERRQMCd5ltM_wAkGbVnFCO-ku0lsqtxYTM30JO2euYlMvbD-IBl_ES0Vekcw6_4TH2ocA3PHfKAHE4beR6jHwlEfFWbaM-y5AbF5b7DcVaYJkRj3Cn7zvjSdGM-R-24QqrrsqhdXnGKxYH6MNoISY2o54IKBYXk_cWayPJ9dVRj7CH3I')">
-                </div>
-                <div class="absolute top-4 left-4">
-                    <div
-                        class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-outline-variant shadow-sm">
-                        <p class="font-label-mono text-label-mono text-primary">Artificial Intelligence (AI)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Progress Bar -->
-        <div class="mb-stack-lg max-w-xl mx-auto">
-            <div class="flex items-center justify-between relative">
-                <!-- Line background -->
-                <div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-high -translate-y-1/2 z-0">
-                </div>
-                <!-- Progress fill -->
-                <div
-                    class="absolute top-1/2 left-0 w-1/2 h-[2px] bg-secondary -translate-y-1/2 z-0 transition-all duration-500">
-                </div>
-                <!-- Step 1 -->
-                <div class="relative z-10 flex flex-col items-center gap-2">
-                    <div
-                        class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-sm shadow-sm">
-                        <span class="material-symbols-outlined text-[18px]">check</span>
-                    </div>
-                    <span class="hidden md:block font-label-sm text-label-sm text-on-surface-variant">基本資料</span>
-                </div>
-                <!-- Step 2 -->
-                <div class="relative z-10 flex flex-col items-center gap-2">
-                    <div
-                        class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-sm shadow-sm">
-                        <span class="material-symbols-outlined text-[18px]">check</span>
-                    </div>
-                    <span class="hidden md:block font-label-sm text-label-sm text-on-surface-variant">研討會選擇</span>
-                </div>
-                <!-- Step 3 (Active) -->
-                <div class="relative z-10 flex flex-col items-center gap-2">
-                    <div
-                        class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-secondary/20 pulse-secondary">
-                        3
-                    </div>
-                    <span class="font-label-sm text-label-sm text-primary font-bold">設定帳號</span>
-                </div>
-                <!-- Step 4 -->
-                <div class="relative z-10 flex flex-col items-center gap-2">
-                    <div
-                        class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold text-sm">
-                        4
-                    </div>
-                    <span class="hidden md:block font-label-sm text-label-sm text-on-surface-variant">確認送出</span>
-                </div>
-            </div>
-        </div>
+    <main class="max-w-[800px] mx-auto px-margin-mobile md:px-gutter py-stack-lg min-h-[calc(100vh-128px)]">
+        
+        <!-- step progress -->
+        <StepProgress :currentStep="3"/>
+        
         <!-- Registration Form Container -->
         <div class="max-w-[600px] mx-auto glass-card p-gutter md:p-stack-lg rounded-xl shadow-sm">
             <header class="mb-stack-md text-center">
                 <h2 class="font-headline-lg text-headline-lg text-primary mb-2">設定您的登入帳號</h2>
                 <p class="font-body-md text-body-md text-on-surface-variant">請設定一組用於管理您的研討會參與和證書下載的帳號密碼。</p>
             </header>
-            <form class="space-y-stack-md">
+            <form class="space-y-stack-md" @submit.prevent="submitGoNext">
                 <!-- Username Field with Loading State -->
                 <div class="space-y-stack-sm">
                     <label class="block font-body-md text-body-md font-bold text-primary" for="username">使用者名稱</label>
@@ -128,7 +59,7 @@ import Footer from './../Components/FooterComponent.vue'
                         <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
                         <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
                     </div>
-                    <p class="font-label-sm text-label-sm text-on-surface-variant">建議包含特殊符號以增強安全性</p>
+                    <p class="font-label-sm text-label-mono text-on-surface-variant">建議包含特殊符號以增強安全性</p>
                 </div>
                 <!-- Confirm Password Field -->
                 <div class="space-y-stack-sm">
