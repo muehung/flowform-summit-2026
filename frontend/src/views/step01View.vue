@@ -5,12 +5,15 @@ import Navbar from '../components/NavbarComponent.vue'
 import Footer from '../components/FooterComponent.vue'
 import StepProgress from '../components/StepProgressComponent.vue';
 
-const form = ref({
+
+const formDefault = {
     name: '',
     email: '',
     phone: '',
     identity: '',
-})
+}
+
+const form = ref({...formDefault})
 
 const errors = ref({
     name: '',
@@ -53,10 +56,10 @@ function validateForm() {
     // errors obj的值 變成 array value
     const formValue = Object.values(errors.value);
     // .every 用的工具
-    const isFalse = (currentValue)=> currentValue === "" || currentValue == false; 
+    const isFalse = (currentValue)=> currentValue === ""; 
     return formValue.every(isFalse);
 
-    // return Object.values(errors.value).every(msg => msg === "" || msg == false)
+    // return Object.values(errors.value).every(msg => msg === "")
 }
 
 
@@ -113,23 +116,29 @@ function cancelRegistration() {
                 <form class="space-y-stack-md" @submit.prevent="submitGoNext">
                     <!-- Name Field -->
                     <div class="space-y-stack-sm">
-                        <label class="block font-body-md font-bold text-on-surface" for="name">真實姓名</label>
+                        <label class="block font-body-md font-bold text-on-surface" for="name">姓名
+                            <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+                            <span class="sr-only">必填</span>
+                        </label>
                         <input
                             :value="form.name"
                             @input="form.name = $event.target.value"
                             ref="inputFirstFocus"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
-                            id="name" name="name" placeholder="請輸入完整姓名" type="text" />
+                            id="name" name="name" placeholder="請輸入完整姓名" type="text" required/>
                             <span v-if="errors.name" class="text-red-500">{{errors.name}}</span>
                     </div>
                     <!-- Email Field -->
                     <div class="space-y-stack-sm">
-                        <label class="block font-body-md font-bold text-on-surface" for="email">電子郵件 </label>
+                        <label class="block font-body-md font-bold text-on-surface" for="email">電子郵件 
+                            <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+                            <span class="sr-only">必填</span>
+                        </label>
                         <input
                             :value="form.email"
                             @input="form.email = $event.target.value"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
-                            id="email" name="email" placeholder="example@itseminar.com" type="email" />
+                            id="email" name="email" placeholder="example@itseminar.com" type="email" required/>
 
                             <span v-if="errors.email" class="text-red-500">{{errors.email}}</span>
                         <p class="font-label-mono text-label-mono text-on-surface-variant flex items-center gap-1">
@@ -139,22 +148,28 @@ function cancelRegistration() {
                     </div>
                     <!-- Phone Field -->
                     <div class="space-y-stack-sm">
-                        <label class="block font-body-md font-bold text-on-surface" for="phone">聯絡電話 </label>
+                        <label class="block font-body-md font-bold text-on-surface" for="phone">聯絡電話 
+                            <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+                            <span class="sr-only">必填</span>
+                        </label>
                         <input
                             :value="form.phone"
                             @input="form.phone = $event.target.value"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
-                            id="phone" name="phone" placeholder="09XX-XXX-XXX" type="tel" />
+                            id="phone" name="phone" placeholder="09XX-XXX-XXX" type="tel" required/>
                             <span v-if="errors.phone" class="text-red-500">{{errors.phone}}</span>
                     </div>
                     <!-- Identity Field -->
                     <div class="space-y-stack-sm">
-                        <label class="block font-body-md font-bold text-on-surface" for="identity">身分類別 </label>
+                        <label class="block font-body-md font-bold text-on-surface" for="identity">身分類別 
+                            <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+                            <span class="sr-only">必填</span>
+                        </label>
                         <div class="relative">
                             <select
                                 :value="form.identity" @change="form.identity = $event.target.value"
                                 class="w-full h-12 px-4 pr-10 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none appearance-none cursor-pointer"
-                                id="identity" name="identity">
+                                id="identity" name="identity" required>
                                 <option disabled="" selected="" value="">請選擇您的身分</option>
                                 <option value="developer">軟體開發者 (Developer)</option>
                                 <option value="devops">維運工程師 (DevOps)</option>
