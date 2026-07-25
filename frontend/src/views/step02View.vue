@@ -1,9 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
 import StepProgress from '../components/StepProgressComponent.vue';
-
+import { stepNumbers } from '../data/stepProgress.js'
 
  const formDefault = {
     company: '',
@@ -23,8 +23,58 @@ const errors = ref({
 
 const inputFirstFocus = ref(null);
 
-const handleInterests = function (){
 
+// use on form department
+const selectDepartment =ref("");
+const optionOtherValue = ref(null);
+
+
+
+computed(()=> {
+    if(selectDepartment.value === 'other'){  // 空值 選項ABC Other
+        return form.value.department = optionOtherValue.value
+        console.log(form.value.department,1)
+    } else {
+        return form.value.department = selectDepartment.value
+        console.log(form.value.department,2)
+    }
+})
+
+// Germini:
+// const finalDepartment = computed(() => {
+//   if (selectDepartment.value === 'other') {
+//     return optionOtherValue.value // 回傳自填的值
+//   }
+//   return selectDepartment.value   // 回傳下拉選單的值
+// })
+
+
+
+
+// form.value.department = (selectDepartment === 'other')
+// ? optionOtherValue.value
+// : selectDepartment.value
+
+// selectDepartment ? 'other' : optionOtherValue.value , selectDepartment.value
+
+
+
+
+
+
+
+
+
+const interestOptions = ['Edge Computing', 'Cloud Native', 'Cybersecurity', 'DevOps'];
+
+const handleInterests = function (e){
+    // 有紫色的按鈕
+    // <button class="px-4 py-2 rounded-full border border-secondary bg-secondary/5 text-secondary flex items-center gap-2"
+    //     type="button">
+    //     <span class="material-symbols-outlined text-sm"
+    //         style="font-variation-settings: 'FILL' 1;">cloud</span>
+    //     <span class="font-label-mono text-label-sm">Cloud Native</span>
+    // </button>
 }
 
 function validateForm(){
@@ -32,7 +82,26 @@ function validateForm(){
         errors.value.company = '請填寫 公司/組織 名稱';
     } else {
         form.value.company == ''
+    };
+
+    if(form.value.department == ''){
+        errors.value.department = '請填寫 所屬部門';
+    } else {
+        form.value.department == ''
     }
+    // 職稱非必填
+    // if(form.value.jobTitle == ''){
+    //     errors.value.jobTitle = '請填寫 職稱';
+    // } else {
+    //     form.value.jobTitle == ''
+    // }
+
+    // 非必填
+    // if(form.value.interests == ''){
+    //     errors.value.interests = '請填寫 感興趣的技術領域';
+    // } else {
+    //     form.value.interests == ''
+    // }
 }
 
 </script>
@@ -83,12 +152,14 @@ function validateForm(){
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
                     <!-- Company Input -->
                     <div class="flex flex-col gap-stack-sm">
-                        <label class="font-body-md font-bold text-on-surface" for="company">公司/組織名稱</label>
+                        <label class="font-body-md font-bold text-on-surface" for="company">公司/組織名稱
+                            <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+                            <span class="sr-only">必填</span>
+                        </label>
                         <div class="relative">
                             <input :value="form.company" @input="form.company = $event.target.value" ref="inputFirstFocus"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
-                                id="company" placeholder="例如：FlowForm 科技" type="text" />
-
+                                id="company" placeholder="例如：FlowForm 科技" type="text" required/>
                                 <span v-if="errors.company" class="text-red-500">{{errors.company}}</span>
 
                             <span
@@ -98,15 +169,17 @@ function validateForm(){
                     </div>
                     <!-- Department Input -->
                     <div class="flex flex-col gap-stack-sm">
-                        <label class="font-body-md font-bold text-on-surface" for="department">所屬部門</label>
-                        {{ form.department }}
+                        <label class="font-body-md font-bold text-on-surface" for="department">所屬部門
+                            <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+                            <span class="sr-only">必填</span>
+                        </label>
                         <div class="relative">
                             <select
-                             :value="form.department"
-                             @change="form.department = $event.target.value"
+                             :value="selectDepartment"
+                             @change="selectDepartment = $event.target.value"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none"
-                                id="department">
-                                <option disabled="" selected="" value="">請選擇部門...</option>
+                                id="department" required>
+                                <option disabled="" value="">請選擇部門...</option>
                                 <option value="it">資訊科技 / IT</option>
                                 <option value="rd">研發中心 / R&amp;D</option>
                                 <option value="design">設計 / Product Design</option>
@@ -114,9 +187,15 @@ function validateForm(){
                                 <option value="operation">維運管理 / Operations</option>
                                 <option value="other">其他</option>
                             </select>
-                            <span v-if="errors.department" class="text-red-500">{{errors.department}}</span>
                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
                         </div>
+                        <input type="text" name="other" 
+                        v-show="selectDepartment === 'other'" :value="optionOtherValue" 
+                        @input="optionOtherValue = $event.target.value"
+                        placeholder="請填其他部門名稱" class="w-full mt-2 px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none">
+                            
+                        <span v-if="errors.department" class="text-red-500">{{errors.department}}</span>
+
                     </div>
                 </div>
                 <div class="flex flex-col gap-stack-sm">
@@ -129,14 +208,14 @@ function validateForm(){
                 <div class="flex flex-col gap-stack-sm">
                     <label class="font-body-md font-bold text-on-surface">感興趣的技術領域 (可多選)</label>
                     <div class="flex flex-wrap gap-2 mt-1">
-                        <button :value="form.interests" @click="handleInterests"
+                        <button v-for="interest in interestOptions" :key="interest" :value="form.interests" @click="handleInterests"
                             class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-2 group"
                             type="button">
                             <span
                                 class="material-symbols-outlined text-sm text-outline group-hover:text-secondary">memory</span>
-                            <span class="font-label-mono text-label-sm">Edge Computing</span>
+                            <span class="font-label-mono text-label-sm">{{interest}}</span>
                         </button>
-                        <button
+                        <!-- <button
                             class="px-4 py-2 rounded-full border border-secondary bg-secondary/5 text-secondary flex items-center gap-2"
                             type="button">
                             <span class="material-symbols-outlined text-sm"
@@ -156,7 +235,7 @@ function validateForm(){
                             <span
                                 class="material-symbols-outlined text-sm text-outline group-hover:text-secondary">hub</span>
                             <span class="font-label-mono text-label-sm">DevOps</span>
-                        </button>
+                        </button> -->
                     </div>
                 </div>
                 <!-- Footer Actions -->
