@@ -17,53 +17,59 @@ const form = ref({...formDefault});
 const errors = ref({
     company: '',
     department: '',
+    departmentOther: '',
     jobTitle: '',
     interests: ''
 });
 
 const inputFirstFocus = ref(null);
 
-
 // use on form department
 const selectDepartment =ref("");
-const optionOtherValue = ref(null);
+const optionOtherValue = ref("");
 
-
-
-computed(()=> {
-    if(selectDepartment.value === 'other'){  // 空值 選項ABC Other
-        return form.value.department = optionOtherValue.value
-        console.log(form.value.department,1)
+// optionOtherValue 是ref object, 永遠是 true
+    // computed內，職責：根據舊的響應式資料，計算並傳回一個「新值」。禁止修改響應式資料（會有副作用，無法預期狀態、無窮迴圈）
+    // 先檢查輸入框，下拉選單跟輸入框都有值，會先選輸入框值
+const departmentValue = computed(()=>{
+    if(selectDepartment.value === "other"){
+        return optionOtherValue.value
     } else {
-        return form.value.department = selectDepartment.value
-        console.log(form.value.department,2)
+        return selectDepartment.value
     }
 })
 
-// Germini:
-// const finalDepartment = computed(() => {
-//   if (selectDepartment.value === 'other') {
-//     return optionOtherValue.value // 回傳自填的值
-//   }
-//   return selectDepartment.value   // 回傳下拉選單的值
+// watch() 的第一個參數必須是「響應式目標」（例如：selectDepartment (不用.value 會變成"" )，或是 () => selectDepartment.value 這種 getter 函式），如果傳入 !selectDepartment === ""，傳進去的是一個運算後的布林值（false），Vue 會無法監聽它的變化。
+watch(selectDepartment, ()=>{
+    if(selectDepartment.value !== "other"){
+        optionOtherValue.value = "";
+    }
+})
+
+// 選了其他，文字框一定要填」這屬於表單驗證（Validation）。在 Vue 中，這通常不需要用 watch 去阻止使用者，而是用一個 computed 來計算「目前有沒有錯誤」。 computed 需要被變數儲存 + return 對錯，template才能用這變數顯示紅字或禁用
+// 驗證 optionOtherValue 一定要填
+// const isDepartOtherError = computed(()=>{
+//     // 如果選了「其他」，錯誤條件是：輸入框去除空格後是空的
+//     if(selectDepartment.value === "other"){
+//         return optionOtherValue.value.trim() === "";
+//     }
+//     // 只要選的不是「其他」一律算沒有錯誤，直接回傳 false
+//     return false
 // })
+const isDepartOtherError = computed(()=>{
+    return selectDepartment.value === "other" && optionOtherValue.value.trim() === "";
+})
 
 
+watch(isDepartOtherError, ()=>{
+    console.log(isDepartOtherError.value, 'isDepartOtherError')
+})
 
-
-// form.value.department = (selectDepartment === 'other')
-// ? optionOtherValue.value
-// : selectDepartment.value
-
-// selectDepartment ? 'other' : optionOtherValue.value , selectDepartment.value
-
-
-
-
-
-
-
-
+watch([selectDepartment,optionOtherValue], ()=>{
+    console.log(selectDepartment.value)
+    console.log(optionOtherValue.value)
+    console.log(form.department,3)
+})
 
 const interestOptions = ['Edge Computing', 'Cloud Native', 'Cybersecurity', 'DevOps'];
 
@@ -77,6 +83,8 @@ const handleInterests = function (e){
     // </button>
 }
 
+const stepProgress = stepNumbers.find((step)=> step.number === 2);
+
 function validateForm(){
     if(form.value.company == ''){
         errors.value.company = '請填寫 公司/組織 名稱';
@@ -89,6 +97,10 @@ function validateForm(){
     } else {
         form.value.department == ''
     }
+    if (isDepartOtherError ){
+        errors.value.departmentOther = '請填寫 其他部門';
+    } 
+
     // 職稱非必填
     // if(form.value.jobTitle == ''){
     //     errors.value.jobTitle = '請填寫 職稱';
@@ -96,7 +108,7 @@ function validateForm(){
     //     form.value.jobTitle == ''
     // }
 
-    // 非必填
+    // 感興趣 非必填
     // if(form.value.interests == ''){
     //     errors.value.interests = '請填寫 感興趣的技術領域';
     // } else {
@@ -104,6 +116,12 @@ function validateForm(){
     // }
 }
 
+function submitGoNext() {
+    if(validateForm()){
+        console.log('Moving to step 3...');
+        router.push({ path: '/step03' })
+    }
+}
 </script>
 <template>
     <!-- Top Navigation Accent -->
@@ -195,6 +213,7 @@ function validateForm(){
                         placeholder="請填其他部門名稱" class="w-full mt-2 px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none">
                             
                         <span v-if="errors.department" class="text-red-500">{{errors.department}}</span>
+                        <span v-if="isDepartOtherError" class="text-red-500">{{errors.departmentOther}}</span>
 
                     </div>
                 </div>
@@ -251,7 +270,7 @@ function validateForm(){
                     <button
                         class="w-full md:w-auto px-12 py-3 rounded-lg bg-primary text-on-primary font-bold shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:scale-95 transition-all flex items-center justify-center gap-2 group"
                         type="submit">
-                        下一階段：專案需求
+                        下一步：{{ stepProgress?.text }}
                         <span
                             class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </button>
