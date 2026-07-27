@@ -28,20 +28,20 @@ onMounted(()=>{
 })
 
 function validateForm() {
-    if(form.value.name === "") {
+    if(form.value.name.trim === "") {
         errors.value.name = "請填寫姓名欄位";
     } else {
         errors.value.name = "";
     }
 
-    if(form.value.email === "" || !form.value.email.includes("@")) {
+    if(form.value.email.trim === "" || !form.value.email.includes("@")) {
         errors.value.email = "請填寫email欄位或格式錯誤";
     } else {
         errors.value.email = "";
     }
 
     const phoneRegex = /^09\d{2}\d{3}\d{3}$/;
-    if(form.value.phone === "" || !phoneRegex.test(form.value.phone)) {
+    if(form.value.phone.trim === "" || !phoneRegex.test(form.value.phone)) {
         errors.value.phone = "請填寫正確手機格式欄位";
     } else {
         errors.value.phone = "";
@@ -54,12 +54,12 @@ function validateForm() {
     }
 
     // errors obj的值 變成 array value
-    const formValue = Object.values(errors.value);
+    const errorValues = Object.values(errors.value);
     // .every 用的工具
-    const isFalse = (currentValue)=> currentValue === ""; 
-    return formValue.every(isFalse);
+    const isEmpty = (currentValue)=> currentValue === ""; 
+    return errorValues.every(isEmpty);
 
-    // return Object.values(errors.value).every(msg => msg === "")
+    // 簡寫：return Object.values(errors.value).every(msg => msg === '')
 }
 
 
