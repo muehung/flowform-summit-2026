@@ -248,7 +248,7 @@ function submitGoNext() {
                                 style="font-variation-settings: 'FILL' 1;">{{ option.icon }}</span>
                                 {{ option.label }}
                             <input type="checkbox"
-                            :checked="form.interests.includes(option.label)" @change="handleInterests(option.label)"
+                            :checked="form.interests.includes(option.label)" @change="handleInterests(option.label)" 
                             name="" id="" class="sr-only">
                         </label>
 
