@@ -46,13 +46,6 @@ watch(selectDepartment, (newVal)=>{
     }
 })
 
-// UI 其他欄位的錯誤提示詞是否出現
-const isDepartOtherError = computed(()=>{
-    // 重新選 selectDepartment 時先不出現
-    if(selectDepartment.value !== 'other') {return false }
-    return selectDepartment.value === "other" && optionOtherValue.value.trim() === ""; // true
-})
-
 const interestOptions = ['Edge Computing', 'Cloud Native', 'Cybersecurity', 'DevOps'];
 
 const handleInterests = function (e){
@@ -207,7 +200,7 @@ function goPrevious(){
                         placeholder="請填其他部門名稱" class="w-full mt-2 px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none">
                             
                         <span v-show="selectDepartment === '' " class="text-red-500">{{errors.department}}</span>
-                        <span v-show="isDepartOtherError" class="text-red-500">{{errors.departmentOther}}</span>
+                        <span v-show="errors.departmentOther" class="text-red-500">{{errors.departmentOther}}</span>
 
                     </div>
                 </div>
