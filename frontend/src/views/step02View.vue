@@ -65,15 +65,18 @@ const interestOptions = [{
         icon: 'hub',
 }];
 
-const handleInterests = function (e){
-    
-    // 有紫色的按鈕
-    // <button class="px-4 py-2 rounded-full border border-secondary bg-secondary/5 text-secondary flex items-center gap-2"
-    //     type="button">
-    //     <span class="material-symbols-outlined text-sm"
-    //         style="font-variation-settings: 'FILL' 1;">cloud</span>
-    //     <span class="font-label-mono text-label-sm">Cloud Native</span>
-    // </button>
+const handleInterests = function (labelName){
+
+    form.value.interests.includes(labelName) 
+    ? form.value.interests = form.value.interests.filter((label)=> label !== labelName)
+    : form.value.interests.push(labelName);
+
+        console.log('-------')
+        console.log(labelName)
+        console.log(form.value.interests)
+        
+    // $event：Vue 提供的保留字，代表原生的 DOM 事件物件，但用在加樣式會可能不同步
+    // option.label：當前迴圈跑到的領域名稱
 }
 
 // 流程 UI
@@ -242,13 +245,27 @@ function submitGoNext() {
                 <div class="flex flex-col gap-stack-sm">
                     <label class="font-body-md font-bold text-on-surface">感興趣的技術領域 (可多選)</label>
                     <div class="flex flex-wrap gap-2 mt-1">
-                        <button v-for="interest in interestOptions" :key="interest" :value="form.interests" @click="handleInterests"
+                        <label v-for="option in interestOptions" :key="option.id"
+
+                        :class="form.interests.includes(option.label) ?  'border-secondary bg-secondary text-white'
+                        : '' " 
+                        class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:cursor-pointer transition-all flex items-center gap-2 group">
+                            <span class="material-symbols-outlined text-sm"
+                                style="font-variation-settings: 'FILL' 1;">{{ option.icon }}</span>
+                                {{ option.label }}
+                            <input type="checkbox"
+                            :checked="form.interests.includes(option.label)" @change="handleInterests(option.label)"
+                            name="" id="" class="sr-only">
+                        </label>
+
+
+                        <!-- <button v-for="interest in interestOptions" :key="interest" :value="form.interests" @click="handleInterests"
                             class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-2 group"
                             type="button">
                             <span
                                 class="material-symbols-outlined text-sm text-outline group-hover:text-secondary">memory</span>
                             <span class="font-label-mono text-label-sm">{{interest}}</span>
-                        </button>
+                        </button> -->
 
                         <!-- <button
                             class="px-4 py-2 rounded-full border border-secondary bg-secondary/5 text-secondary flex items-center gap-2"
