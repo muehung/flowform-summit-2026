@@ -25,7 +25,7 @@ const errors = ref({
 
 const inputFirstFocus = ref(null);
 
-// use on form department
+// 表單部門驗證 use on form department
 const selectDepartment =ref("");
 const optionOtherValue = ref("");
 
@@ -46,9 +46,27 @@ watch(selectDepartment, (newVal)=>{
     }
 })
 
-const interestOptions = ['Edge Computing', 'Cloud Native', 'Cybersecurity', 'DevOps'];
+// 表單興趣多選
+const interestOptions = [{
+        id: 1,
+        label: 'Edge Computing',
+        icon: 'cloud',
+    },{
+        id: 2,
+        label: 'Cloud Native',
+        icon: 'memory',
+    },{
+        id: 3,
+        label: 'Cybersecurity',
+        icon: ' shield',
+    },{
+        id: 4,
+        label: 'DevOps',
+        icon: 'hub',
+}];
 
 const handleInterests = function (e){
+    
     // 有紫色的按鈕
     // <button class="px-4 py-2 rounded-full border border-secondary bg-secondary/5 text-secondary flex items-center gap-2"
     //     type="button">
@@ -58,10 +76,11 @@ const handleInterests = function (e){
     // </button>
 }
 
+// 流程 UI
 const stepProgress = stepNumbers.find((step)=> step.number === 2);
 
+//驗證
 function validateForm(){
-    
     // 驗證公司欄位是否空
     if(form.value.company === ''){
         errors.value.company = '請填寫 公司/組織 名稱';
@@ -83,8 +102,14 @@ function validateForm(){
         errors.value.departmentOther = '';
     }
 
-    // 職稱非必填
-    // 感興趣 非必填
+    // 職稱
+    if( form.value.jobTitle === ''){
+        errors.value.jobTitle = '請填寫職稱'
+    } else {
+        errors.value.jobTitle = '';
+    }
+
+    // 感興趣 非必填，不驗證
 
     let isValid = Object.values(errors.value).every(val => val === '')
 
@@ -96,19 +121,19 @@ function validateForm(){
     return isValid;
 }
 
-
 const router = useRouter();
+
+// 下一步 button
+function goPrevious(){
+    router.push({ path: '/step01' })
+}
+// 上一步 submit
 function submitGoNext() {
     if(validateForm()){
         console.log('Moving to step 3...');
         router.push({ path: '/step03' })
     }
 }
-
-function goPrevious(){
-    router.push({ path: '/step01' })
-}
-
 
 </script>
 <template>
@@ -205,7 +230,10 @@ function goPrevious(){
                     </div>
                 </div>
                 <div class="flex flex-col gap-stack-sm">
-                    <label class="font-body-md font-bold text-on-surface" for="job-title">職稱</label>
+                    <label class="font-body-md font-bold text-on-surface" for="job-title">職稱
+                        <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+                        <span class="sr-only">必填</span>
+                    </label>
                     <input :value="form.jobTitle" @input="form.jobTitle = $event.target.value"
                         class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                         id="job-title" placeholder="例如：資深開發工程師" type="text" />
@@ -221,6 +249,7 @@ function goPrevious(){
                                 class="material-symbols-outlined text-sm text-outline group-hover:text-secondary">memory</span>
                             <span class="font-label-mono text-label-sm">{{interest}}</span>
                         </button>
+
                         <!-- <button
                             class="px-4 py-2 rounded-full border border-secondary bg-secondary/5 text-secondary flex items-center gap-2"
                             type="button">
