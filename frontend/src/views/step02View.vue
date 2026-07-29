@@ -71,9 +71,6 @@ const handleInterests = function (labelName){
     } else {
         form.value.interests.push(labelName);
     }
-        
-    // $event：Vue 提供的保留字，代表原生的 DOM 事件物件，但用在加樣式會可能不同步
-    // option.label：當前迴圈跑到的領域名稱
 }
 
 // 流程 UI
