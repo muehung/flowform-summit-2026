@@ -66,14 +66,11 @@ const interestOptions = [{
 }];
 
 const handleInterests = function (labelName){
-
-    form.value.interests.includes(labelName) 
-    ? form.value.interests = form.value.interests.filter((label)=> label !== labelName)
-    : form.value.interests.push(labelName);
-
-        console.log('-------')
-        console.log(labelName)
-        console.log(form.value.interests)
+    if( form.value.interests.includes(labelName) ){
+        form.value.interests = form.value.interests.filter((label)=> label !== labelName)
+    } else {
+        form.value.interests.push(labelName);
+    }
         
     // $event：Vue 提供的保留字，代表原生的 DOM 事件物件，但用在加樣式會可能不同步
     // option.label：當前迴圈跑到的領域名稱
