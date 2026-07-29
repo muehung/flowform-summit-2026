@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router';
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
 import StepProgress from '../components/StepProgressComponent.vue';
@@ -28,47 +29,28 @@ const inputFirstFocus = ref(null);
 const selectDepartment =ref("");
 const optionOtherValue = ref("");
 
-// optionOtherValue 是ref object, 永遠是 true
-    // computed內，職責：根據舊的響應式資料，計算並傳回一個「新值」。禁止修改響應式資料（會有副作用，無法預期狀態、無窮迴圈）
-    // 先檢查輸入框，下拉選單跟輸入框都有值，會先選輸入框值
 const departmentValue = computed(()=>{
-    if(selectDepartment.value === "other"){
+    // select === other && other's input has value
+    if(selectDepartment.value === "other" && optionOtherValue.value !== ""){
         return optionOtherValue.value
     } else {
         return selectDepartment.value
     }
 })
 
-// watch() 的第一個參數必須是「響應式目標」（例如：selectDepartment (不用.value 會變成"" )，或是 () => selectDepartment.value 這種 getter 函式），如果傳入 !selectDepartment === ""，傳進去的是一個運算後的布林值（false），Vue 會無法監聽它的變化。
-watch(selectDepartment, ()=>{
-    if(selectDepartment.value !== "other"){
+// 只要部門 select 沒選到其他，input 其他(error text) 就清空
+watch(selectDepartment, (newVal)=>{
+    if(newVal !== 'other'){
         optionOtherValue.value = "";
+        errors.value.departmentOther = "";
     }
 })
 
-// 選了其他，文字框一定要填」這屬於表單驗證（Validation）。在 Vue 中，這通常不需要用 watch 去阻止使用者，而是用一個 computed 來計算「目前有沒有錯誤」。 computed 需要被變數儲存 + return 對錯，template才能用這變數顯示紅字或禁用
-// 驗證 optionOtherValue 一定要填
-// const isDepartOtherError = computed(()=>{
-//     // 如果選了「其他」，錯誤條件是：輸入框去除空格後是空的
-//     if(selectDepartment.value === "other"){
-//         return optionOtherValue.value.trim() === "";
-//     }
-//     // 只要選的不是「其他」一律算沒有錯誤，直接回傳 false
-//     return false
-// })
+// UI 其他欄位的錯誤提示詞是否出現
 const isDepartOtherError = computed(()=>{
-    return selectDepartment.value === "other" && optionOtherValue.value.trim() === "";
-})
-
-
-watch(isDepartOtherError, ()=>{
-    console.log(isDepartOtherError.value, 'isDepartOtherError')
-})
-
-watch([selectDepartment,optionOtherValue], ()=>{
-    console.log(selectDepartment.value)
-    console.log(optionOtherValue.value)
-    console.log(form.department,3)
+    // 重新選 selectDepartment 時先不出現
+    if(selectDepartment.value !== 'other') {return false }
+    return selectDepartment.value === "other" && optionOtherValue.value.trim() === ""; // true
 })
 
 const interestOptions = ['Edge Computing', 'Cloud Native', 'Cybersecurity', 'DevOps'];
@@ -86,42 +68,55 @@ const handleInterests = function (e){
 const stepProgress = stepNumbers.find((step)=> step.number === 2);
 
 function validateForm(){
-    if(form.value.company == ''){
+    
+    // 驗證公司欄位是否空
+    if(form.value.company === ''){
         errors.value.company = '請填寫 公司/組織 名稱';
     } else {
-        form.value.company == ''
+        errors.value.company = ''
     };
-
-    if(form.value.department == ''){
+    
+    // 驗證部門欄位是否空
+    if( selectDepartment.value === ''){
         errors.value.department = '請填寫 所屬部門';
     } else {
-        form.value.department == ''
+        errors.value.department = '';
     }
-    if (isDepartOtherError ){
+    // 驗證部門的其他欄位是否空
+    if (selectDepartment.value === 'other' && optionOtherValue.value === ''){
         errors.value.departmentOther = '請填寫 其他部門';
-    } 
+    } else {
+        // 非 other 或 other input 有填寫 error 都清空
+        errors.value.departmentOther = '';
+    }
 
     // 職稱非必填
-    // if(form.value.jobTitle == ''){
-    //     errors.value.jobTitle = '請填寫 職稱';
-    // } else {
-    //     form.value.jobTitle == ''
-    // }
-
     // 感興趣 非必填
-    // if(form.value.interests == ''){
-    //     errors.value.interests = '請填寫 感興趣的技術領域';
-    // } else {
-    //     form.value.interests == ''
-    // }
+
+    let isValid = Object.values(errors.value).every(val => val === '')
+
+    if(isValid) {
+        form.value.department = departmentValue.value;
+    }
+
+    console.log(isValid, 'return value')
+    return isValid;
 }
 
+
+const router = useRouter();
 function submitGoNext() {
     if(validateForm()){
         console.log('Moving to step 3...');
         router.push({ path: '/step03' })
     }
 }
+
+function goPrevious(){
+    router.push({ path: '/step01' })
+}
+
+
 </script>
 <template>
     <!-- Top Navigation Accent -->
@@ -177,9 +172,8 @@ function submitGoNext() {
                         <div class="relative">
                             <input :value="form.company" @input="form.company = $event.target.value" ref="inputFirstFocus"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
-                                id="company" placeholder="例如：FlowForm 科技" type="text" required/>
+                                id="company" placeholder="例如：FlowForm 科技" type="text"/>
                                 <span v-if="errors.company" class="text-red-500">{{errors.company}}</span>
-
                             <span
                                 class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant">corporate_fare</span>
                         </div>
@@ -196,7 +190,7 @@ function submitGoNext() {
                              :value="selectDepartment"
                              @change="selectDepartment = $event.target.value"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none"
-                                id="department" required>
+                                id="department">
                                 <option disabled="" value="">請選擇部門...</option>
                                 <option value="it">資訊科技 / IT</option>
                                 <option value="rd">研發中心 / R&amp;D</option>
@@ -212,8 +206,8 @@ function submitGoNext() {
                         @input="optionOtherValue = $event.target.value"
                         placeholder="請填其他部門名稱" class="w-full mt-2 px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none">
                             
-                        <span v-if="errors.department" class="text-red-500">{{errors.department}}</span>
-                        <span v-if="isDepartOtherError" class="text-red-500">{{errors.departmentOther}}</span>
+                        <span v-show="selectDepartment === '' " class="text-red-500">{{errors.department}}</span>
+                        <span v-show="isDepartOtherError" class="text-red-500">{{errors.departmentOther}}</span>
 
                     </div>
                 </div>
@@ -260,14 +254,14 @@ function submitGoNext() {
                 <!-- Footer Actions -->
                 <div
                     class="pt-stack-lg mt-stack-lg border-t border-outline-variant flex flex-col md:flex-row gap-4 justify-between items-center">
-                    <button
+                    <button @click="goPrevious"
                         class="w-full md:w-auto px-8 py-3 rounded-lg border border-primary text-primary font-bold hover:bg-primary/5 transition-all flex items-center justify-center gap-2 group"
                         type="button">
                         <span
                             class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
                         上一步
                     </button>
-                    <button
+                    <button 
                         class="w-full md:w-auto px-12 py-3 rounded-lg bg-primary text-on-primary font-bold shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:scale-95 transition-all flex items-center justify-center gap-2 group"
                         type="submit">
                         下一步：{{ stepProgress?.text }}
