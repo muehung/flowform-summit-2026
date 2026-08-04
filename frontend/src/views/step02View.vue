@@ -1,29 +1,39 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
 import StepProgress from '../components/StepProgressComponent.vue';
 import { stepNumbers } from '../data/stepProgress.js'
+import { useFormStore } from '../stores/useFormStore.js';
 
- const formDefault = {
-    company: '',
-    department: '',
-    jobTitle: '',
-    interests: []
-};
+//  const formDefault = {
+//     company: '',
+//     department: '',
+//     jobTitle: '',
+//     interests: []
+// };
 
-const form = ref({...formDefault});
+// const form = ref({...formDefault});
 
-const errors = ref({
-    company: '',
-    department: '',
-    departmentOther: '',
-    jobTitle: '',
-    interests: ''
-});
+// const errors = ref({
+//     company: '',
+//     department: '',
+//     departmentOther: '',
+//     jobTitle: '',
+//     interests: ''
+// });
 
-const inputFirstFocus = ref(null);
+// const inputFirstFocus = ref(null);
+
+const storeForm = useFormStore();
+const { form, errors, inputFirstFocus } = storeToRefs(storeForm)
+const { submitGoNext, cancelRegistration } = storeForm
+
+onMounted(()=>{
+    inputFirstFocus.value.focus();
+})
 
 // 表單部門驗證 use on form department
 const selectDepartment =ref("");
@@ -86,7 +96,7 @@ function validateForm(){
     };
     
     // 驗證部門欄位是否空
-    if( selectDepartment.value === ''){
+    if( selectDepartment.value.trim() === ''){
         errors.value.department = '請填寫 所屬部門';
     } else {
         errors.value.department = '';
@@ -100,7 +110,7 @@ function validateForm(){
     }
 
     // 職稱
-    if( form.value.jobTitle === ''){
+    if( form.value.jobTitle.trim() === ''){
         errors.value.jobTitle = '請填寫職稱'
     } else {
         errors.value.jobTitle = '';
@@ -114,23 +124,20 @@ function validateForm(){
         form.value.department = departmentValue.value;
     }
 
-    console.log(isValid, 'return value')
+    console.log(isValid, 'isValid')
     return isValid;
 }
 
 const router = useRouter();
 
-// 下一步 button
+// 上一步 button
 function goPrevious(){
     router.push({ path: '/step01' })
 }
-// 上一步 submit
-function submitGoNext() {
-    if(validateForm()){
-        console.log('Moving to step 3...');
-        router.push({ path: '/step03' })
-    }
-}
+// 下一步 submit
+const handleSubmit = ()=>{
+    submitGoNext(3,validateForm());
+};
 
 </script>
 <template>
@@ -176,7 +183,7 @@ function submitGoNext() {
                 </div>
             </div>
             <!-- Form Fields -->
-            <form class="space-y-stack-md" @submit.prevent="submitGoNext">
+            <form class="space-y-stack-md" @submit.prevent="handleSubmit">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
                     <!-- Company Input -->
                     <div class="flex flex-col gap-stack-sm">

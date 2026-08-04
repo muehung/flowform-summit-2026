@@ -1,47 +1,35 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router'
 import Navbar from '../components/NavbarComponent.vue'
 import Footer from '../components/FooterComponent.vue'
 import StepProgress from '../components/StepProgressComponent.vue';
+import { onMounted } from 'vue';
+import { useFormStore } from '../stores/useFormStore.js';
 
+const storeForm = useFormStore();
+const { form, errors, inputFirstFocus } = storeToRefs(storeForm)
+const { submitGoNext, cancelRegistration } = storeForm
 
-const formDefault = {
-    name: '',
-    email: '',
-    phone: '',
-    identity: '',
-}
-
-const form = ref({...formDefault})
-
-const errors = ref({
-    name: '',
-    email: '',
-    phone: '',
-    identity: '',
-})
-
-const inputFirstFocus = ref(null);
 onMounted(()=>{
     inputFirstFocus.value.focus();
 })
 
-function validateForm() {
-    if(form.value.name.trim === "") {
+const validateForm = function() {
+    if(form.value.name.trim() === "") {
         errors.value.name = "請填寫姓名欄位";
     } else {
         errors.value.name = "";
     }
 
-    if(form.value.email.trim === "" || !form.value.email.includes("@")) {
+    if(form.value.email.trim() === "" || !form.value.email.includes("@")) {
         errors.value.email = "請填寫email欄位或格式錯誤";
     } else {
         errors.value.email = "";
     }
 
     const phoneRegex = /^09\d{2}\d{3}\d{3}$/;
-    if(form.value.phone.trim === "" || !phoneRegex.test(form.value.phone)) {
+    if(form.value.phone.trim() === "" || !phoneRegex.test(form.value.phone)) {
         errors.value.phone = "請填寫正確手機格式欄位";
     } else {
         errors.value.phone = "";
@@ -60,32 +48,11 @@ function validateForm() {
     return errorValues.every(isEmpty);
 
     // 簡寫：return Object.values(errors.value).every(msg => msg === '')
-}
+};
 
-
-const router = useRouter();
-function submitGoNext() {
-    if(validateForm()){
-        console.log('Moving to step 2...');
-        router.push({ path: '/step02' })
-    }
-}
-
-function cancelRegistration() {
-    form.value = {
-        name: '',
-        email: '',
-        phone: '',
-        identity: '',
-    };
-    errors.value = {
-        name: '',
-        email: '',
-        phone: '',
-        identity: '',
-    }
-}
-
+const handleSubmit = ()=>{
+    submitGoNext(2,validateForm());
+};
 
 </script>
 <template>
@@ -113,7 +80,7 @@ function cancelRegistration() {
             <!-- Registration Form Card -->
             <div
                 class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 md:p-10 shadow-sm transition-all-custom">
-                <form class="space-y-stack-md" @submit.prevent="submitGoNext">
+                <form class="space-y-stack-md" @submit.prevent="handleSubmit">
                     <!-- Name Field -->
                     <div class="space-y-stack-sm">
                         <label class="block font-body-md font-bold text-on-surface" for="name">姓名
@@ -125,7 +92,7 @@ function cancelRegistration() {
                             @input="form.name = $event.target.value"
                             ref="inputFirstFocus"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
-                            id="name" name="name" placeholder="請輸入完整姓名" type="text" required/>
+                            id="name" name="name" placeholder="請輸入完姓名" type="text" />
                             <span v-if="errors.name" class="text-red-500">{{errors.name}}</span>
                     </div>
                     <!-- Email Field -->
@@ -138,7 +105,7 @@ function cancelRegistration() {
                             :value="form.email"
                             @input="form.email = $event.target.value"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
-                            id="email" name="email" placeholder="example@itseminar.com" type="email" required/>
+                            id="email" name="email" placeholder="example@itseminar.com" type="email" />
 
                             <span v-if="errors.email" class="text-red-500">{{errors.email}}</span>
                         <p class="font-label-mono text-label-mono text-on-surface-variant flex items-center gap-1">
@@ -156,7 +123,7 @@ function cancelRegistration() {
                             :value="form.phone"
                             @input="form.phone = $event.target.value"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
-                            id="phone" name="phone" placeholder="09XX-XXX-XXX" type="tel" required/>
+                            id="phone" name="phone" placeholder="09XX-XXX-XXX" type="tel" />
                             <span v-if="errors.phone" class="text-red-500">{{errors.phone}}</span>
                     </div>
                     <!-- Identity Field -->
@@ -169,7 +136,7 @@ function cancelRegistration() {
                             <select
                                 :value="form.identity" @change="form.identity = $event.target.value"
                                 class="w-full h-12 px-4 pr-10 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none appearance-none cursor-pointer"
-                                id="identity" name="identity" required>
+                                id="identity" name="identity" >
                                 <option disabled="" selected="" value="">請選擇您的身分</option>
                                 <option value="developer">軟體開發者 (Developer)</option>
                                 <option value="devops">維運工程師 (DevOps)</option>
