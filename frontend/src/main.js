@@ -4,7 +4,7 @@ import { createPinia } from 'pinia'
 import router from './router/router.js'
 import App from './App.vue'
 
-const pinia = createPinia;
+const pinia = createPinia();
 
 createApp(App)
     .use(pinia)
