@@ -8,6 +8,7 @@ import { onMounted } from 'vue';
 import { useFormStore } from '../stores/useFormStore.js';
 
 const storeForm = useFormStore();
+
 const { form, errors, inputFirstFocus } = storeToRefs(storeForm);
 const { submitGoNext, cancelRegistration } = storeForm;
 
