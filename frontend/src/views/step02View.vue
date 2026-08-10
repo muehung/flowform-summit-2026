@@ -1,60 +1,81 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
+import { ErrorMessage, useForm } from 'vee-validate'
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
 import StepProgress from '../components/StepProgressComponent.vue';
 import { stepNumbers } from '../data/stepProgress.js'
 import { useFormStore } from '../stores/useFormStore.js';
 
-//  const formDefault = {
-//     company: '',
-//     department: '',
-//     jobTitle: '',
-//     interests: []
-// };
-
-// const form = ref({...formDefault});
-
-// const errors = ref({
-//     company: '',
-//     department: '',
-//     departmentOther: '',
-//     jobTitle: '',
-//     interests: ''
-// });
-
-// const inputFirstFocus = ref(null);
 
 const storeForm = useFormStore();
-const { form, errors, inputFirstFocus } = storeToRefs(storeForm);
+const { form, inputFirstFocus } = storeToRefs(storeForm);
 const { submitGoNext, cancelRegistration } = storeForm;
 
 onMounted(()=>{
     inputFirstFocus.value.focus();
 })
 
-// 表單部門驗證 use on form department
-const selectDepartment =ref("");
-const optionOtherValue = ref("");
-
-const departmentValue = computed(()=>{
-    // select === other && other's input has value
-    if(selectDepartment.value === "other" && optionOtherValue.value !== ""){
-        return optionOtherValue.value
+const schemaForm = {
+company(val){
+    if( !val || val?.trim() === "") {
+        return "請填寫 公司/組織 名稱"
     } else {
-        return selectDepartment.value
+        return true
     }
-})
+},
+selectDepartment(val){
+    if( !val || val?.trim() === "") {
+    return "請填寫所屬部門"
+    } else {
+    return true
+    }
+},
+departmentOther(val){
+    if( !val || val?.trim() === "") {
+    return "請填寫其他部門"
+    } else if (selectDepartment.value !== 'other') {
+        return false
+    } else {
+    return true
+    }
+},
+jobTitle(val){
+    if( !val || val?.trim() === "") {
+    return "請填寫職稱"
+    } else {
+    return true
+    }
+},
+// 感興趣 非必填，不驗證
+}
+
+
+const { values, errors, defineField, handleSubmit } = useForm({
+    validationSchema: schemaForm,
+    initialValues: form.value,
+    validateOnBlur: false,
+    validateOnModelUpdate: false,
+});
+const [ interests, interestsProps ] = defineField('interests');
+const [ company, companyProps ] = defineField('company');
+const [ selectDepartment, selectDepartmentProps ] = defineField('selectDepartment');
+const [ departmentOther, departmentOtherProps ] = defineField('departmentOther');
+const [ jobTitle, jobTitleProps ] = defineField('jobTitle');
+
 
 // 只要部門 select 沒選到其他，input 其他(error text) 就清空
-watch(selectDepartment, (newVal)=>{
+watch(selectDepartment.value, (newVal)=>{
     if(newVal !== 'other'){
         optionOtherValue.value = "";
         errors.value.departmentOther = "";
     }
-})
+});
+console.log('selectDepartment', selectDepartment)
+// console.log('errors', errors.value)
+
 
 // 表單興趣多選
 const interestOptions = [{
@@ -74,59 +95,17 @@ const interestOptions = [{
         label: 'DevOps',
         icon: 'hub',
 }];
-
 const handleInterests = function (labelName){
     if( form.value.interests.includes(labelName) ){
         form.value.interests = form.value.interests.filter((label)=> label !== labelName)
     } else {
         form.value.interests.push(labelName);
     }
-}
+};
 
 // 流程 UI
 const stepProgress = stepNumbers.find((step)=> step.number === 2);
 
-//驗證
-function validateForm(){
-    // 驗證公司欄位是否空
-    if(form.value.company === ''){
-        errors.value.company = '請填寫 公司/組織 名稱';
-    } else {
-        errors.value.company = ''
-    };
-    
-    // 驗證部門欄位是否空
-    if( selectDepartment.value.trim() === ''){
-        errors.value.department = '請填寫 所屬部門';
-    } else {
-        errors.value.department = '';
-    }
-    // 驗證部門的其他欄位是否空
-    if (selectDepartment.value === 'other' && optionOtherValue.value === ''){
-        errors.value.departmentOther = '請填寫 其他部門';
-    } else {
-        // 非 other 或 other input 有填寫 error 都清空
-        errors.value.departmentOther = '';
-    }
-
-    // 職稱
-    if( form.value.jobTitle.trim() === ''){
-        errors.value.jobTitle = '請填寫職稱'
-    } else {
-        errors.value.jobTitle = '';
-    }
-
-    // 感興趣 非必填，不驗證
-
-    let isValid = Object.values(errors.value).every(val => val === '')
-
-    if(isValid) {
-        form.value.department = departmentValue.value;
-    }
-
-    console.log(isValid, 'isValid')
-    return isValid;
-}
 
 const router = useRouter();
 
@@ -135,9 +114,22 @@ function goPrevious(){
     router.push({ path: '/step01' })
 }
 // 下一步 submit
-const handleSubmit = ()=>{
-    submitGoNext(3,validateForm());
-};
+// const handleSubmit = ()=>{
+//     submitGoNext(3,validateForm());
+// };
+// vee-validate's handleSubmit
+// 這裡面的程式碼,只有全部欄位驗證通過才會執行
+const goSubmit = handleSubmit(
+    (ok) => {
+        console.log('✅ 驗證通過:', ok)
+        form.value = values;
+        submitGoNext(3)
+    },
+    (ctx) => {
+        console.log('❌ 驗證失敗:', ctx.errors)
+        console.log(ErrorMessage)
+    }
+)
 
 </script>
 <template>
@@ -183,7 +175,7 @@ const handleSubmit = ()=>{
                 </div>
             </div>
             <!-- Form Fields -->
-            <form class="space-y-stack-md" @submit.prevent="handleSubmit">
+            <form class="space-y-stack-md" @submit.prevent="goSubmit">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
                     <!-- Company Input -->
                     <div class="flex flex-col gap-stack-sm">
@@ -192,7 +184,9 @@ const handleSubmit = ()=>{
                             <span class="sr-only">必填</span>
                         </label>
                         <div class="relative">
-                            <input :value="form.company" @input="form.company = $event.target.value" ref="inputFirstFocus"
+                            <input 
+                            v-model="company" v-bind="companyProps"
+                            ref="inputFirstFocus"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                                 id="company" placeholder="例如：FlowForm 科技" type="text"/>
                                 <span v-if="errors.company" class="text-red-500">{{errors.company}}</span>
@@ -209,8 +203,7 @@ const handleSubmit = ()=>{
                         </label>
                         <div class="relative">
                             <select
-                             :value="selectDepartment"
-                             @change="selectDepartment = $event.target.value"
+                            v-model="selectDepartment" v-bind="selectDepartmentProps"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none"
                                 id="department">
                                 <option disabled="" value="">請選擇部門...</option>
@@ -224,8 +217,8 @@ const handleSubmit = ()=>{
                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
                         </div>
                         <input type="text" name="other" 
-                        v-show="selectDepartment === 'other'" :value="optionOtherValue" 
-                        @input="optionOtherValue = $event.target.value"
+                        v-model="optionOtherValue"
+                        v-bind="optionOtherValue"
                         placeholder="請填其他部門名稱" class="w-full mt-2 px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none">
                             
                         <span v-show="selectDepartment === '' " class="text-red-500">{{errors.department}}</span>
@@ -238,7 +231,10 @@ const handleSubmit = ()=>{
                         <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
                         <span class="sr-only">必填</span>
                     </label>
-                    <input :value="form.jobTitle" @input="form.jobTitle = $event.target.value"
+                    <input 
+                    v-model="jobTitle"
+                    v-bind="jobTitleProps"
+                    :value="form.jobTitle" @input="form.jobTitle = $event.target.value"
                         class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                         id="job-title" placeholder="例如：資深開發工程師" type="text" />
                         <span v-if="errors.jobTitle" class="text-red-500">{{errors.jobTitle}}</span>
