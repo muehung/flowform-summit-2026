@@ -1,60 +1,85 @@
 <script setup>
+import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router'
+import { ErrorMessage, useForm } from 'vee-validate'
 import Navbar from '../components/NavbarComponent.vue'
 import Footer from '../components/FooterComponent.vue'
 import StepProgress from '../components/StepProgressComponent.vue';
-import { onMounted } from 'vue';
+// import { stepNumbers } from '../data/stepProgress.js' // step02 以後才用到
 import { useFormStore } from '../stores/useFormStore.js';
 
-const storeForm = useFormStore();
 
-const { form, errors, inputFirstFocus } = storeToRefs(storeForm);
+const storeForm = useFormStore();
+const { form, inputFirstFocus } = storeToRefs(storeForm);
 const { submitGoNext, cancelRegistration } = storeForm;
+
 
 onMounted(()=>{
     inputFirstFocus.value.focus();
 })
 
-const validateForm = function() {
-    if(form.value.name.trim() === "") {
-        errors.value.name = "請填寫姓名欄位";
+const schemaForm = {
+nameX(val) {
+    if ( !val || val?.trim() === "" ) {
+    return "請填寫姓名欄位"
+    } else if ( val.length > 8 ) {
+    return "超過 8 個字元"
     } else {
-        errors.value.name = "";
+    return true
     }
-
-    if(form.value.email.trim() === "" || !form.value.email.includes("@")) {
-        errors.value.email = "請填寫email欄位或格式錯誤";
+},
+email(val) {
+    if( !val || val?.trim() === "") {
+    return "請填寫EMAIL"
+    } else if ( !val.includes("@")){
+    return "請填寫EMAIL正確格式"
     } else {
-        errors.value.email = "";
+    return true
     }
-
+},
+phone(val){
     const phoneRegex = /^09\d{2}\d{3}\d{3}$/;
-    if(form.value.phone.trim() === "" || !phoneRegex.test(form.value.phone)) {
-        errors.value.phone = "請填寫正確手機格式欄位";
+        if( !val || val?.trim() === "" || !phoneRegex.test(val)) {
+            return "請填寫正確手機格式欄位"
+        } else {
+            return true
+        }    
+},
+identity(val){
+    if(val === "") {
+        return "請選擇身份"
     } else {
-        errors.value.phone = "";
+        return true
     }
+}}
 
-    if(form.value.identity === "") {
-        errors.value.identity = "請選擇身份";
-    } else {
-        errors.value.identity = "";
+const { values, errors, defineField, handleSubmit } = useForm({
+    validationSchema: schemaForm,
+    initialValues: form.value,
+    validateOnBlur: false,
+    validateOnModelUpdate: false,
+});
+const [ nameX, nameXProps ] = defineField('nameX');
+const [ email, emailProps ] = defineField('email');
+const [ phone, phoneProps ] = defineField('phone');
+const [ identity, identityProps ] = defineField('identity');
+
+
+
+// vee-validate's handleSubmit
+// 這裡面的程式碼,只有全部欄位驗證通過才會執行
+const goSubmit = handleSubmit(
+    (ok) => {
+        console.log('✅ 驗證通過:', ok)
+        form.value = values;
+        submitGoNext(2)
+    },
+    (ctx) => {
+        console.log('❌ 驗證失敗:', ctx.errors)
+        console.log(ErrorMessage)
     }
-
-    // errors obj的值 變成 array value
-    const errorValues = Object.values(errors.value);
-    // .every 用的工具
-    const isEmpty = (currentValue)=> currentValue === ""; 
-    return errorValues.every(isEmpty);
-
-    // 簡寫：return Object.values(errors.value).every(msg => msg === '')
-};
-
-const handleSubmit = ()=>{
-    submitGoNext(2,validateForm());
-};
-
+)
 </script>
 <template>
     <!-- Top Navigation Accent -->
@@ -81,7 +106,7 @@ const handleSubmit = ()=>{
             <!-- Registration Form Card -->
             <div
                 class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 md:p-10 shadow-sm transition-all-custom">
-                <form class="space-y-stack-md" @submit.prevent="handleSubmit">
+                <form class="space-y-stack-md" @submit.prevent="goSubmit">
                     <!-- Name Field -->
                     <div class="space-y-stack-sm">
                         <label class="block font-body-md font-bold text-on-surface" for="name">姓名
@@ -89,12 +114,11 @@ const handleSubmit = ()=>{
                             <span class="sr-only">必填</span>
                         </label>
                         <input
-                            :value="form.name"
-                            @input="form.name = $event.target.value"
+                            v-model="nameX" v-bind="nameXProps"
                             ref="inputFirstFocus"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
                             id="name" name="name" placeholder="請輸入完姓名" type="text" />
-                            <span v-if="errors.name" class="text-red-500">{{errors.name}}</span>
+                             <span v-if="errors.nameX" class="text-red-500">{{errors.nameX}}</span>
                     </div>
                     <!-- Email Field -->
                     <div class="space-y-stack-sm">
@@ -103,8 +127,7 @@ const handleSubmit = ()=>{
                             <span class="sr-only">必填</span>
                         </label>
                         <input
-                            :value="form.email"
-                            @input="form.email = $event.target.value"
+                            v-model="email" v-bind="emailProps"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
                             id="email" name="email" placeholder="example@itseminar.com" type="email" />
 
@@ -121,8 +144,7 @@ const handleSubmit = ()=>{
                             <span class="sr-only">必填</span>
                         </label>
                         <input
-                            :value="form.phone"
-                            @input="form.phone = $event.target.value"
+                            v-model="phone" v-bind="phoneProps"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
                             id="phone" name="phone" placeholder="09XX-XXX-XXX" type="tel" />
                             <span v-if="errors.phone" class="text-red-500">{{errors.phone}}</span>
@@ -135,7 +157,7 @@ const handleSubmit = ()=>{
                         </label>
                         <div class="relative">
                             <select
-                                :value="form.identity" @change="form.identity = $event.target.value"
+                                v-model="identity" v-bind="identityProps"
                                 class="w-full h-12 px-4 pr-10 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none appearance-none cursor-pointer"
                                 id="identity" name="identity" >
                                 <option disabled="" selected="" value="">請選擇您的身分</option>
