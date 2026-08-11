@@ -18,6 +18,7 @@ onMounted(()=>{
     inputFirstFocus.value.focus();
 })
 
+// 用來驗證
 const schemaForm = {
 company(val){
     if( !val || val?.trim() === "") {
@@ -52,7 +53,7 @@ jobTitle(val){
 // 感興趣欄位 非必填，不驗證
 }
 
-
+// vee-validate
 const { values, errors, defineField, handleSubmit } = useForm({
     validationSchema: schemaForm,
     initialValues: form.value,
@@ -68,19 +69,17 @@ const [ jobTitle, jobTitleProps ] = defineField('jobTitle');
 const [ interests, interestsProps ] = defineField('interests');
 
 // UI
-// 只要部門 select 沒選到其他，input 其他(error text) 就清空
-// watch(selectDepartment.value, (newVal)=>{
-//     // if(newVal !== 'other'){
-//     //     departmentOther.value = "";
-//     //     errors.value.departmentOther = "";
-//     // }
-//     if(selectDepartment.value === 'other') {
-//         console.log('othererer')
-
-//     }
-// });
-// console.log('selectDepartmentProps', selectDepartmentProps)
-// console.log('errors', errors.value)
+// 只要部門 select 沒選到其他，其他的資料跟錯誤資料就清空
+// watch 第一個參數必須是 響應式物件本身（Ref）
+watch(selectDepartment, (val)=>{
+    if(val !== 'other'){
+        departmentOther.value = "";
+        errors.value.departmentOther = "";
+    } else {
+        // val === other, select是其他
+        errors.value.selectDepartment = "";
+    }
+});
 
 
 // 表單興趣多選
@@ -120,15 +119,24 @@ function goPrevious(){
     router.push({ path: '/step01' })
 }
 // 下一步 submit
-// const handleSubmit = ()=>{
-//     submitGoNext(3,validateForm());
-// };
 // vee-validate's handleSubmit
-// 這裡面的程式碼,只有全部欄位驗證通過才會執行
 const goSubmit = handleSubmit(
+    // handleSubmit 第1個callback 只有全部欄位驗證通過才會執行
     (ok) => {
-        console.log('✅ 驗證通過:', ok)
-        form.value = values;
+        console.log('✅ 驗證通過:', ok);
+        // UI 狀態值和 data資料分開（把 selectDepartment 或 departmentOther 統一存 finalDepartment 再傳回 store 的 department
+        const finalDepartment = selectDepartment.value === 'other'
+        ? departmentOther.value
+        : selectDepartment.value
+        // finalDepartment 是普通字串
+        form.value = {
+            // 不能直接將一個全新物件賦值，保留 Step 1 的舊資料
+            ...form.value,
+            company: company.value,
+            department: finalDepartment,
+            jobTitle: jobTitle.value,
+            interests: interests.value,
+        }
         submitGoNext(3)
     },
     (ctx) => {
