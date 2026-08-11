@@ -27,17 +27,17 @@ company(val){
     }
 },
 selectDepartment(val){
-    if( !val || val?.trim() === "") {
-    return "請填寫所屬部門"
+    if( !val || val === "") {
+        return "請填寫所屬部門"
     } else {
-    return true
+        return true
     }
 },
-departmentOther(val){
-    if( !val || val?.trim() === "") {
+departmentOther(otherVal){
+    // 不是 other 就讓欄位驗證通過
+    if(selectDepartment.value !== 'other') return true
+    if( !otherVal || otherVal === "") {
     return "請填寫其他部門"
-    } else if (selectDepartment.value !== 'other') {
-        return false
     } else {
     return true
     }
@@ -49,7 +49,7 @@ jobTitle(val){
     return true
     }
 },
-// 感興趣 非必填，不驗證
+// 感興趣欄位 非必填，不驗證
 }
 
 
@@ -59,21 +59,27 @@ const { values, errors, defineField, handleSubmit } = useForm({
     validateOnBlur: false,
     validateOnModelUpdate: false,
 });
-const [ interests, interestsProps ] = defineField('interests');
+
+// UI value
 const [ company, companyProps ] = defineField('company');
 const [ selectDepartment, selectDepartmentProps ] = defineField('selectDepartment');
 const [ departmentOther, departmentOtherProps ] = defineField('departmentOther');
 const [ jobTitle, jobTitleProps ] = defineField('jobTitle');
+const [ interests, interestsProps ] = defineField('interests');
 
-
+// UI
 // 只要部門 select 沒選到其他，input 其他(error text) 就清空
-watch(selectDepartment.value, (newVal)=>{
-    if(newVal !== 'other'){
-        optionOtherValue.value = "";
-        errors.value.departmentOther = "";
-    }
-});
-console.log('selectDepartment', selectDepartment)
+// watch(selectDepartment.value, (newVal)=>{
+//     // if(newVal !== 'other'){
+//     //     departmentOther.value = "";
+//     //     errors.value.departmentOther = "";
+//     // }
+//     if(selectDepartment.value === 'other') {
+//         console.log('othererer')
+
+//     }
+// });
+// console.log('selectDepartmentProps', selectDepartmentProps)
 // console.log('errors', errors.value)
 
 
@@ -216,13 +222,14 @@ const goSubmit = handleSubmit(
                             </select>
                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
                         </div>
-                        <input type="text" name="other" 
-                        v-model="optionOtherValue"
-                        v-bind="optionOtherValue"
+                        <input type="text" name="other"
+                        v-show="selectDepartment === 'other' "
+                        v-model="departmentOther"
+                        v-bind="departmentOtherProps"
                         placeholder="請填其他部門名稱" class="w-full mt-2 px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none">
                             
-                        <span v-show="selectDepartment === '' " class="text-red-500">{{errors.department}}</span>
-                        <span v-show="errors.departmentOther" class="text-red-500">{{errors.departmentOther}}</span>
+                        <span v-show="!selectDepartment" class="text-red-500">{{errors.selectDepartment}}</span>
+                        <span v-show="selectDepartment === 'other' && !departmentOther" class="text-red-500">{{errors.departmentOther}}</span>
 
                     </div>
                 </div>
@@ -234,7 +241,6 @@ const goSubmit = handleSubmit(
                     <input 
                     v-model="jobTitle"
                     v-bind="jobTitleProps"
-                    :value="form.jobTitle" @input="form.jobTitle = $event.target.value"
                         class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                         id="job-title" placeholder="例如：資深開發工程師" type="text" />
                         <span v-if="errors.jobTitle" class="text-red-500">{{errors.jobTitle}}</span>
@@ -243,7 +249,6 @@ const goSubmit = handleSubmit(
                     <label class="font-body-md font-bold text-on-surface">感興趣的技術領域 (可多選)</label>
                     <div class="flex flex-wrap gap-2 mt-1">
                         <label v-for="option in interestOptions" :key="option.id"
-
                         :class="form.interests.includes(option.label) ?  'border-secondary bg-secondary text-white'
                         : '' " 
                         class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:cursor-pointer transition-all flex items-center gap-2 group">
@@ -254,37 +259,6 @@ const goSubmit = handleSubmit(
                             :checked="form.interests.includes(option.label)" @change="handleInterests(option.label)" 
                             name="" id="" class="sr-only">
                         </label>
-
-
-                        <!-- <button v-for="interest in interestOptions" :key="interest" :value="form.interests" @click="handleInterests"
-                            class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-2 group"
-                            type="button">
-                            <span
-                                class="material-symbols-outlined text-sm text-outline group-hover:text-secondary">memory</span>
-                            <span class="font-label-mono text-label-sm">{{interest}}</span>
-                        </button> -->
-
-                        <!-- <button
-                            class="px-4 py-2 rounded-full border border-secondary bg-secondary/5 text-secondary flex items-center gap-2"
-                            type="button">
-                            <span class="material-symbols-outlined text-sm"
-                                style="font-variation-settings: 'FILL' 1;">cloud</span>
-                            <span class="font-label-mono text-label-sm">Cloud Native</span>
-                        </button>
-                        <button
-                            class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-2 group"
-                            type="button">
-                            <span
-                                class="material-symbols-outlined text-sm text-outline group-hover:text-secondary">shield</span>
-                            <span class="font-label-mono text-label-sm">Cybersecurity</span>
-                        </button>
-                        <button
-                            class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-2 group"
-                            type="button">
-                            <span
-                                class="material-symbols-outlined text-sm text-outline group-hover:text-secondary">hub</span>
-                            <span class="font-label-mono text-label-sm">DevOps</span>
-                        </button> -->
                     </div>
                 </div>
                 <!-- Footer Actions -->

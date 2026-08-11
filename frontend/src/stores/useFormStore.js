@@ -10,7 +10,8 @@ const formDefault = {
         identity: '',
         // 
         company: '',
-        department: '',
+        selectDepartment: '',
+        departmentOther: '',
         jobTitle: '',
         interests: []
 }
