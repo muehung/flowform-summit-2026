@@ -10,15 +10,16 @@ const formDefault = {
         identity: '',
         // 
         company: '',
-        selectDepartment: '',
-        departmentOther: '',
+        department: '',
         jobTitle: '',
         interests: []
 }
 
 export const useFormStore = defineStore('formData', ()=>{
     const form = ref({...formDefault});
-    useStorage('form-step', form); // 第2參數本身有帶ref()
+    const storeVersion = ref("01");
+    useStorage( ()=>`form-step${storeVersion.value}`, form, localStorage, { mergeDefaults: true } ); 
+    // 第2參數本身有帶ref(), 第4參數mergeDefaults: true 新增欄位而 LocalStorage 的資料缺少該欄位，會自動把預設值補進去
     const inputFirstFocus =  ref(null);
 
     const submitGoNext = function(num) {
@@ -31,5 +32,5 @@ export const useFormStore = defineStore('formData', ()=>{
         // errors.value = { ...errorsDefault }
     }
 
-    return { form, inputFirstFocus, submitGoNext, cancelRegistration }
+    return { form, storeVersion, inputFirstFocus, submitGoNext, cancelRegistration }
 });
