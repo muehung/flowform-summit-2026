@@ -12,7 +12,7 @@ import { useFormStore } from '../stores/useFormStore.js';
 
 const storeForm = useFormStore();
 const { form, inputFirstFocus } = storeToRefs(storeForm);
-const { submitGoNext, cancelRegistration } = storeForm;
+const { submitGoNext } = storeForm;
 
 onMounted(()=>{
     inputFirstFocus.value.focus();
