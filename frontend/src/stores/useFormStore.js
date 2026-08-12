@@ -12,7 +12,10 @@ const formDefault = {
         company: '',
         department: '',
         jobTitle: '',
-        interests: []
+        interests: [],
+        //
+        account:'',
+        password: '',
 }
 
 export const useFormStore = defineStore('formData', ()=>{
