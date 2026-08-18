@@ -5,6 +5,7 @@ import Step01View from '../views/step01View.vue'
 import Step02View from '../views/step02View.vue'
 import Step03View from '../views/step03View.vue'
 import Step04View from '../views/step04View.vue'
+import successView from '../views/successView.vue'
 import NotFoundComponent from '../components/NotFoundComponent.vue'
 
 const router = createRouter({
@@ -15,6 +16,7 @@ const router = createRouter({
         { path: '/step02', component: Step02View},
         { path: '/step03', component: Step03View},
         { path: '/step04', component: Step04View},
+        { path: '/success', component: successView},
         { path: '/:pathMatch(.*)', component: NotFoundComponent }
     ],
 })
