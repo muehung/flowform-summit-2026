@@ -14,17 +14,9 @@ const storeForm = useFormStore();
 const { form, inputFirstFocus } = storeToRefs(storeForm);
 const { submitGoNext } = storeForm;
 
-onMounted(()=>{
-    inputFirstFocus.value.focus();
-})
-
-// confirmedPw
-// defineRule('confirmedPw',)
-
-
 // 第一階段（同步檢查）：如果 val 是空的，直接回傳錯誤訊息 "請輸入帳號"。
 // 第二階段（非同步檢查）：呼叫 await checkAccountApi(val)，如果回傳 false（表示帳號已被佔用），就回傳 "該帳號已被使用，請更換"；否則回傳 true。
-const checkAccountApi = async function(val){
+const checkAccountApi = async function(y){
     const url = "http://localhost:3000/api/check-account";
     try {
         const res = await fetch(url, {
@@ -32,11 +24,11 @@ const checkAccountApi = async function(val){
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ account: val })
+            body: JSON.stringify({ account: y }),
         });
-        const data = await res.json();
         if(!res.ok){ return false }
-        return data.available
+        const data = await res.json(); // 相當於 JSON.parse
+        return data // 相當於 = true
     } catch(err) {
         console.error(err.message)
         return false
@@ -47,6 +39,7 @@ const checkAccountApi = async function(val){
 const schemaForm = {
 async account(val){
     if( !val || val?.trim() === "") { return "請填寫帳號" }
+    if ( val.length < 3) { return "至少 3 字元"}
     if ( await checkAccountApi(val) === false) { return "已經有重複帳號" }
     return true
 },
@@ -74,7 +67,7 @@ passwordConfirm(val){
 const { values, errors, defineField, handleSubmit } = useForm({
     validationSchema: schemaForm,
     initialValues: form.value,
-    validateOnBlur: false,
+    validateOnBlur: false, // 防止全域欄位在剛進頁面時誤觸發空白警告
     validateOnModelUpdate: false,
 });
 
@@ -86,8 +79,42 @@ const [ passwordConfirm, passwordConfirmProps ] = defineField('passwordConfirm')
 // 流程 UI
 const stepProgress = stepNumbers.find((step)=> step.number === 3);
 
-const router = useRouter();
+onMounted(()=>{
+    inputFirstFocus.value.focus();
+})
 
+
+// 全域的自動驗證會跟 inputFirstFocus focus()衝突，所以關閉自動驗證的 blur 手寫控制blur
+// UI 控制4種狀態
+const accountCheckStatus = ref('default');
+const handleAccountBlur = async function(){
+    // 檢查空值
+    if(!account.value || account.value.trim() === "" ){
+        accountCheckStatus.value = 'default';
+        return;
+    }
+    // 還沒跑 checkAccountApi promise 前，就改狀態
+    accountCheckStatus.value = 'checking'; //
+    // 檢查 UI value
+    const accountData = await checkAccountApi( account.value );
+
+    // 請求失敗
+    if( accountData === false ) {
+        accountCheckStatus.value = 'fail';
+        return
+    }
+    // 帳號可不可用
+    if( accountData.available === true ) {
+        accountCheckStatus.value = 'success';
+        return
+    }
+    else if( accountData.available === false ) {
+        accountCheckStatus.value = 'error';
+        return
+    }
+}
+
+const router = useRouter();
 // 上一步 button
 function goPrevious(){
     router.push({ path: '/step02' })
@@ -133,24 +160,63 @@ const goSubmit = handleSubmit(
             <form class="space-y-stack-md" @submit.prevent="goSubmit">
                 <!-- Username Field with Loading State -->
                 <div class="space-y-stack-sm">
-                    <label class="block font-body-md text-body-md font-bold text-primary" for="username">使用者名稱</label>
+                    <label class="block font-body-md text-body-md font-bold text-primary" for="username">使用者名稱</label>            
                     <div class="relative group">
                         <input
                             v-model="account"
                             v-bind="accountProps"
+                            @blur="handleAccountBlur"
+                            @input="accountCheckStatus = 'default'"
                             ref="inputFirstFocus"
                             class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
                             id="username" placeholder="請輸入欲使用的帳號" type="text" />
                         <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <div
-                                class="animate-spin h-4 w-4 border-2 border-secondary border-t-transparent rounded-full">
+                            <div v-if="accountCheckStatus === 'error' || accountCheckStatus === 'fail' ">
+                                <!-- 叉叉 -->
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#da0000" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
                             </div>
+                            <div v-if="accountCheckStatus === 'success'">
+                                <!-- 打勾 -->
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#ff0" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                            </div>
+                            <div v-if="accountCheckStatus === 'checking'">
+                                <!-- 轉圈 -->
+                                <div class="animate-spin h-4 w-4 border-2 border-secondary border-t-transparent rounded-full"></div>
+                            </div>
+                            
                         </div>
                     </div>
-                    <p class="font-label-mono text-label-mono text-secondary flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-[16px]">sync</span>
-                        <span class="loading-dots">檢查帳號是否可用中</span>
-                    </p>
+
+                    <div v-if="accountCheckStatus === 'checking'">
+                        <p class="font-label-mono text-label-mono text-secondary flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">sync</span>
+                            <span class="loading-dots">檢查帳號是否可用中</span>
+                        </p>
+                    </div>
+                    <div v-if="accountCheckStatus === 'error'">
+                        <p class="font-label-mono text-label-mono text-red-500 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">sync</span>
+                            <span class="loading-dots">帳號不可用</span>
+                        </p>
+                    </div>
+                    <div v-if="accountCheckStatus === 'success'">
+                        <p class="font-label-mono text-label-mono text-lime-500 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">sync</span>
+                            <span class="loading-dots">帳號可用</span>
+                        </p>
+                    </div>
+                    <div v-if="accountCheckStatus === 'fail'">
+                        <p class="font-label-mono text-label-mono text-yellow-500 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">sync</span>
+                            <span class="loading-dots">檢查失敗，請稍後再試</span>
+                        </p>
+                    </div>
+
+
                 </div>
                 <!-- Password Field -->
                 <div class="space-y-stack-sm">
