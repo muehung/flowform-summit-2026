@@ -13,9 +13,6 @@ const storeForm = useFormStore();
 
 const { form, inputFirstFocus } = storeToRefs(storeForm);
 const { submitGoNext } = storeForm;
-
-// 第一階段（同步檢查）：如果 val 是空的，直接回傳錯誤訊息 "請輸入帳號"。
-// 第二階段（非同步檢查）：呼叫 await checkAccountApi(val)，如果回傳 false（表示帳號已被佔用），就回傳 "該帳號已被使用，請更換"；否則回傳 true。
 const checkAccountApi = async function(y){
     const url = "http://localhost:3000/api/check-account";
     try {
@@ -37,66 +34,70 @@ const checkAccountApi = async function(y){
 
 // 用來驗證
 const schemaForm = {
-async account(val){
-    if( !val || val?.trim() === "") { return "請填寫帳號" }
-    if ( val.length < 3) { return "至少 3 字元"}
-    if ( await checkAccountApi(val) === false) { return "已經有重複帳號" }
-    return true
-},
-password(val){
-    if( !val || val?.trim() === "") {
-        return "請填寫密碼"
-    } else if("密碼的驗證最短最長、中英文、有英文大小寫") {
-        return "密碼需要有最短最長、中英文、有英文大小寫"
-    } else {
+    async account(val){
+        if( !val || val?.trim() === "") { return "請填寫帳號" }
+        if( val.length < 3 ) { return "請輸入超過 3 字元" }
+        // if ( await checkAccountApi(val) === false) { return "已經有重複帳號" }
         return true
+    },
+    password(val){
+        if( !val || val?.trim() === "") {
+            return "請填寫密碼"
+        } else if("密碼的驗證最短最長、中英文、有英文大小寫") {
+            return "密碼需要有最短最長、中英文、有英文大小寫"
+        } else {
+            return true
+        }
+    },
+    passwordConfirm(val){
+        if( !val || val?.trim() === "") {
+            return "密碼不一致"
+        } else if("比對"){
+            return "密碼不一致"
+        } else {
+            return true
+        }
     }
-},
-passwordConfirm(val){
-    if( !val || val?.trim() === "") {
-        return "密碼不一致"
-    } else if("比對"){
-        return "密碼不一致"
-    } else {
-        return true
-    }
-}
 }
 
 // vee-validate
-const { values, errors, defineField, handleSubmit } = useForm({
+const { values, errors, defineField, handleSubmit, validateField } = useForm({
     validationSchema: schemaForm,
     initialValues: form.value,
-    validateOnBlur: false, // 防止全域欄位在剛進頁面時誤觸發空白警告
-    validateOnModelUpdate: false,
 });
 
-// UI value
-const [ account, accountProps ] = defineField('account');
+// UI connected
+const [ account, accountProps ] = defineField('account', {
+    validateOnBlur: false, // 防止欄位在剛進頁面時誤觸發空白警告
+    validateOnModelUpdate: false,
+});
 const [ password, passwordProps ] = defineField('password');
 const [ passwordConfirm, passwordConfirmProps ] = defineField('passwordConfirm');
 
-// 流程 UI
-const stepProgress = stepNumbers.find((step)=> step.number === 3);
-
-onMounted(()=>{
-    inputFirstFocus.value.focus();
-})
-
-
+// 第一階段（同步檢查）：如果 val 是空的，直接回傳錯誤訊息 "請輸入帳號"。
+// 第二階段（非同步檢查）：呼叫 await checkAccountApi(val)，如果回傳 false（表示帳號已被佔用），就回傳 "該帳號已被使用，請更換"；否則回傳 true。
 // 全域的自動驗證會跟 inputFirstFocus focus()衝突，所以關閉自動驗證的 blur 手寫控制blur
 // UI 控制4種狀態
 const accountCheckStatus = ref('default');
+
 const handleAccountBlur = async function(){
     // 檢查空值
-    if(!account.value || account.value.trim() === "" ){
-        accountCheckStatus.value = 'default';
-        return;
-    }
+    // if(!account.value || account.value.trim() === "" ){
+    //     accountCheckStatus.value = 'default';
+    //     return;
+    // }
+    // if ( account.value.length < 3) {
+    //     accountCheckStatus.value = 'tooShort';
+    //     return;
+    // };
+
     // 還沒跑 checkAccountApi promise 前，就改狀態
     accountCheckStatus.value = 'checking'; //
     // 檢查 UI value
     const accountData = await checkAccountApi( account.value );
+    
+    // 把 checking 關閉
+
 
     // 請求失敗
     if( accountData === false ) {
@@ -105,14 +106,21 @@ const handleAccountBlur = async function(){
     }
     // 帳號可不可用
     if( accountData.available === true ) {
-        accountCheckStatus.value = 'success';
+        accountCheckStatus.value = 'able';
         return
     }
     else if( accountData.available === false ) {
-        accountCheckStatus.value = 'error';
+        accountCheckStatus.value = 'unable';
         return
     }
 }
+
+// 流程 UI
+const stepProgress = stepNumbers.find((step)=> step.number === 3);
+
+onMounted(()=>{
+    inputFirstFocus.value.focus();
+})
 
 const router = useRouter();
 // 上一步 button
@@ -150,7 +158,6 @@ const goSubmit = handleSubmit(
         
         <!-- step progress -->
         <StepProgress :currentStep="3"/>
-        
         <!-- Registration Form Container -->
         <div class="max-w-[600px] mx-auto glass-card p-gutter md:p-stack-lg rounded-xl shadow-sm">
             <header class="mb-stack-md text-center">
@@ -165,19 +172,22 @@ const goSubmit = handleSubmit(
                         <input
                             v-model="account"
                             v-bind="accountProps"
-                            @blur="handleAccountBlur"
                             @input="accountCheckStatus = 'default'"
                             ref="inputFirstFocus"
                             class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
                             id="username" placeholder="請輸入欲使用的帳號" type="text" />
                         <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <div v-if="accountCheckStatus === 'error' || accountCheckStatus === 'fail' ">
+
+                            <!-- {{ errors.account }}
+                            <ErrorMessage name="account" /> -->
+
+                            <div v-if="accountCheckStatus === 'unable' || accountCheckStatus === 'fail' ">
                                 <!-- 叉叉 -->
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="#da0000" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                                 </svg>
                             </div>
-                            <div v-if="accountCheckStatus === 'success'">
+                            <div v-if="accountCheckStatus === 'able'">
                                 <!-- 打勾 -->
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="#ff0" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -197,13 +207,19 @@ const goSubmit = handleSubmit(
                             <span class="loading-dots">檢查帳號是否可用中</span>
                         </p>
                     </div>
-                    <div v-if="accountCheckStatus === 'error'">
+                    <div v-if="accountCheckStatus === 'unable'">
                         <p class="font-label-mono text-label-mono text-red-500 flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[16px]">sync</span>
                             <span class="loading-dots">帳號不可用</span>
                         </p>
                     </div>
-                    <div v-if="accountCheckStatus === 'success'">
+                    <!-- <div v-if="accountCheckStatus === 'tooShort'">
+                        <p class="font-label-mono text-label-mono text-red-500 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">sync</span>
+                            <span class="loading-dots">請輸入超過 3 字元</span>
+                        </p>
+                    </div> -->
+                    <div v-if="accountCheckStatus === 'able'">
                         <p class="font-label-mono text-label-mono text-lime-500 flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[16px]">sync</span>
                             <span class="loading-dots">帳號可用</span>
