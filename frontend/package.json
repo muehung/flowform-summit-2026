@@ -12,7 +12,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/core": "^14.4.0",
     "pinia": "^4.0.2",
     "vee-validate": "^4.15.1",
     "vue": "^3.5.39",
