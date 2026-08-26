@@ -1,4 +1,4 @@
-import { ref, onMounted } from "vue"
+import { ref } from "vue"
 import { defineStore } from "pinia"
 import router from "../router/router";
 
@@ -30,5 +30,5 @@ export const useFormStore = defineStore('formData', ()=>{
         form.value = { ...formDefault };
     }
 
-    return { form, STORAGE_KEY, inputFirstFocus, submitGoNext, cancelRegistration }
+    return { form, inputFirstFocus, submitGoNext, cancelRegistration }
 });
