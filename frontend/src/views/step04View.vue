@@ -1,8 +1,52 @@
 <script setup>
-import { ref } from 'vue'
-import Navbar from './../Components/NavbarComponent.vue'
-import Footer from './../Components/FooterComponent.vue'
-import StepProgress from '../components/StepProgressComponent.vue';
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
+import { useForm } from 'vee-validate';
+import Navbar from './../Components/NavbarComponent.vue';
+import Footer from './../Components/FooterComponent.vue';
+import StepProgress from './../components/StepProgressComponent.vue';
+import LoadingCover from './../components/LoadingCoverComponent.vue';
+import { useFormStore } from '../stores/useFormStore.js';
+
+const storeForm = useFormStore();
+const { form } = storeToRefs(storeForm);
+const { submitGoNext } = storeForm;
+const info = form.value;
+console.log(info.value)
+
+
+const { errors, isSubmitting, handleSubmit } = useForm();
+
+
+// submitting time
+// function goSubmiting(){
+//     const isLoading = isSubmitting
+//   if( isSubmitting === false ) return 
+//   isSubmitting
+// }
+const isLoading = ref(isSubmitting)
+
+const router = useRouter();
+// 上一步 button
+function goPrevious(){
+    router.push({ path: '/step03' })
+}
+
+// 下一步 送出
+// const goSubmit = handleSubmit(
+//     (submitValues)=>{
+//     // post api for backend
+//     // loading
+//     // 失敗 跳提示
+//     // 成功 到下一頁
+//     },
+//     (ctx)=>{
+
+//     }
+// )
+
+
 
 </script>
 <template>
@@ -11,7 +55,6 @@ import StepProgress from '../components/StepProgressComponent.vue';
 
     <!-- navbar -->
     <Navbar />
-
     <main class="max-w-[800px] mx-auto px-margin-mobile md:px-gutter py-stack-lg min-h-[calc(100vh-128px)]">
         
         <!-- step progress -->
@@ -34,15 +77,15 @@ import StepProgress from '../components/StepProgressComponent.vue';
                 <div class="space-y-2">
                     <div class="flex justify-between">
                         <span class="font-label-sm text-on-surface-variant">姓名</span>
-                        <span class="font-body-md font-semibold">張 小明</span>
+                        <span class="font-body-md font-semibold">{{ info.nameX }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-label-sm text-on-surface-variant">電子郵件</span>
-                        <span class="font-body-md font-semibold">xiaoming.z@example.com</span>
+                        <span class="font-body-md font-semibold">{{ info.email }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-label-sm text-on-surface-variant">聯絡電話</span>
-                        <span class="font-body-md font-semibold">+886 912 345 678</span>
+                        <span class="font-body-md font-semibold">{{ info.phone }}</span>
                     </div>
                 </div>
             </div>
@@ -55,19 +98,24 @@ import StepProgress from '../components/StepProgressComponent.vue';
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <span class="font-label-sm text-on-surface-variant">報名身份</span>
-                        <span class="bg-tag-bg px-3 py-1 rounded-full font-label-mono text-label-mono text-primary">Senior
-                            Developer</span>
+                        <span v-if="info.identity"
+                        class="bg-tag-bg px-3 py-1 rounded-full font-label-mono text-label-mono text-primary">{{ info.identity }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="font-label-sm text-on-surface-variant">所屬單位</span>
-                        <span class="font-body-md font-semibold">FlowForm Tech Corp.</span>
+                        <span class="font-body-md font-semibold">{{ info.company }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="font-label-sm text-on-surface-variant">興趣標籤</span>
-                        <div class="flex gap-1">
-                            <span class="bg-tag-bg px-2 py-0.5 rounded text-[10px] font-label-mono">AI</span>
-                            <span class="bg-tag-bg px-2 py-0.5 rounded text-[10px] font-label-mono">DevOps</span>
+                        <div v-if="info.interests.length > 0">
+                            <div class="flex flex-col items-start gap-2">
+                                
+                                <span v-for="tag in info.interests" :key="tag"
+                                class="bg-tag-bg px-2 py-0.5 rounded text-[10px] font-label-mono">{{ tag }}</span>
+                                
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -104,14 +152,16 @@ import StepProgress from '../components/StepProgressComponent.vue';
         <!-- Action Buttons -->
         <div class="flex flex-col md:flex-row gap-4 justify-between items-center mt-stack-lg">
             <button
+            @click="goPrevious"
                 class="w-full md:w-auto px-8 py-3 rounded-lg border-2 border-primary text-primary font-bold hover:bg-primary/5 transition-all flex items-center justify-center gap-2 group">
                 <span
                     class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
-                Previous
+                上一步
             </button>
             <button
+                @click="goSubmit"
                 class="w-full md:w-auto px-12 py-3 bg-primary text-on-primary rounded-lg font-bold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
-                Confirm &amp; Submit
+                確認送出
                 <span class="material-symbols-outlined">send</span>
             </button>
         </div>
@@ -121,4 +171,6 @@ import StepProgress from '../components/StepProgressComponent.vue';
 
     <!-- Footer -->
     <Footer />
+
+    <LoadingCover v-if="isLoading" />
 </template>
