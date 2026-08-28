@@ -1,12 +1,12 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
-import { ErrorMessage, useForm, defineRule } from 'vee-validate'
-import Navbar from './../Components/NavbarComponent.vue'
-import Footer from './../Components/FooterComponent.vue'
+import { ErrorMessage, useForm } from 'vee-validate';
+import Navbar from './../Components/NavbarComponent.vue';
+import Footer from './../Components/FooterComponent.vue';
 import StepProgress from '../components/StepProgressComponent.vue';
-import { stepNumbers } from '../data/stepProgress.js'
+import { stepNumbers } from '../data/stepProgress.js';
 import { useFormStore } from '../stores/useFormStore.js';
 
 const storeForm = useFormStore();
@@ -24,23 +24,30 @@ const schemaForm = {
     password(val){
         if( !val || val?.trim() === "") {
             return "請填寫密碼"
-        } else if("密碼的驗證最短最長、中英文、有英文大小寫") {
-            return "密碼需要有最短最長、中英文、有英文大小寫"
-        } else {
-            return true
         }
+        if (val.length < 8 || val.length > 20 ) {
+            return "密碼長度需在 8 到 20 個字元之間";
+        }
+
+        const hasUpper = /[A-Z]/.test(val);
+        const hasLower = /[a-z]/.test(val);
+        const hasNumber = /\d/.test(val); // 檢查至少有一個數字
+        if(!hasUpper || !hasLower || !hasNumber){
+            return "密碼需同時包含英文大寫、小寫與數字";
+        }
+
+        return true
     },
     passwordConfirm(val){
         if( !val || val?.trim() === "") {
-            return "密碼不一致"
-        } else if("比對"){
-            return "密碼不一致"
+            return "請再次輸入密碼";
+        } else if(val !== values.password ){
+            return "密碼不一致，請重新輸入"
         } else {
             return true
         }
     }
 }
-
 
 // vee-validate: values & errors，已經從 initialValues 綁定
 const { values, errors, defineField, handleSubmit, validateField } = useForm({
@@ -75,7 +82,7 @@ const handleAccountApi = async function(y){
         if(res.status === 500 ) { throw new Error("500 錯誤") }
         if(!res.ok){ throw new Error(res.status + "error") }
         const data = await res.json(); // 相當於 JSON.parse
-        console.log('handle account api:' + data.available)
+        
         return data.available
     } catch(err) {
         // console.error(err.message)
@@ -93,14 +100,6 @@ const validateCheckAccount = async ()=>{
     if(valid === false) return;
 
     accountStatus.value = "checking";
-    // try {
-    //     const res = await handleAccountApi(account.value)
-    //     if(!res){ accountStatus.value = "unavailable"; return } //不需return
-    //     if (res) { accountStatus.value = "available"; return } //不需return
-    // } catch (err) {
-    //     accountStatus.value = "failed";
-    // }
-
     try {
         const isAvailable = await handleAccountApi(account.value)
         accountStatus.value = isAvailable
@@ -116,25 +115,24 @@ const accountUi = {
         message: '',
         className: '',
     },
-
     checking: {
         message: '帳號檢查中',
-        className: 'is-checking',
+        className: 'text-secondary',
     },
 
     available: {
         message: '帳號可以使用',
-        className: 'is-success',
+        className: 'text-lime-500',
     },
 
     unavailable: {
         message: '帳號已被使用',
-        className: 'unavailable',
+        className: 'text-red-500',
     },
 
     failed: {
         message: '檢查失敗，請稍後再試',
-        className: 'failed',
+        className: 'text-yellow-500',
     },
 };
 
@@ -142,8 +140,13 @@ const accountCheckUi = computed(()=>{
      return accountUi[accountStatus.value]
 })
 
+// UI Password
+const showpassword = ref(false);
 
 
+// passwordConfirm
+const showPasswordConfirm = ref(false);
+// const passwordConfirm
 
 // 流程 UI
 const stepProgress = stepNumbers.find((step)=> step.number === 3);
@@ -160,18 +163,21 @@ function goPrevious(){
 // 下一步 submit
 // vee-validate's handleSubmit
 const goSubmit = handleSubmit(
-    (ok) => {
-        console.log('✅ 驗證通過:', ok);
-        form.value = {
-            ...form.value,
+    (submittedValues) => {
+        // console.log('驗證通過:', submittedValues);
+
+        const step03Values = {
             account: account.value,
             password: password.value,
-            passwordConfirm: passwordConfirm.value,
         }
+        
+        form.value.account = step03Values.account;
+        form.value.password = step03Values.password;
+        
         submitGoNext(4)
     },
     (ctx) => {
-        console.log('❌ 驗證失敗:', ctx.errors)
+        console.log('驗證失敗:', ctx.errors)
         console.log(ErrorMessage)
     }
 )
@@ -200,68 +206,49 @@ const goSubmit = handleSubmit(
                 <div class="space-y-stack-sm">
                     <label class="block font-body-md text-body-md font-bold text-primary" for="username">使用者名稱</label>            
                     <div class="relative group">
-                        <input
+                        <input data-private
                             v-model="account"
                             v-bind="accountProps"
                             @input="accountStatus = 'idle'"
                             ref="inputFirstFocus"
-                            class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
-                            id="username" placeholder="請輸入欲使用的帳號" type="text" />
+                            class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/80 transition-all rounded-lg h-12 px-4 font-body-md"
+                            id="username" placeholder="請輸入欲使用的帳號" 
+                            autocomplete="username" type="text" />
                         <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
 
-                            {{accountCheckUi.className}}
-                            <!-- idle checking available unavailable failed -->
-
-                            <!-- <div v-if="accountStatus === 'unable' || accountStatus === 'fail' "> -->
+                            <div v-if="
+                            accountStatus === 'unavailable' ||
+                            accountStatus === 'failed'">
                                 <!-- 叉叉 -->
-                                 <div></div>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#da0000" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#da0000" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="red" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                                 </svg>
-                            <!-- </div>
-                            <div v-if="accountStatus === 'able'"> -->
+                            </div>
+                            <div v-if="accountStatus === 'available'">
                                 <!-- 打勾 -->
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#ff0" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="24px" height="24px" viewBox="0 0 24 24" stroke-width="2" stroke="#84cc16" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                 </svg>
-                            <!-- </div> -->
-                            <!-- <div v-if="accountStatus === 'checking'"> -->
+                            </div>
+                            <div v-if="accountStatus === 'checking'">
                                 <!-- 轉圈 -->
                                 <div class="animate-spin h-4 w-4 border-2 border-secondary border-t-transparent rounded-full"></div>
-                            <!-- </div> -->
+                            </div>
                             
                         </div>
                     </div>
-
-                    <p>{{ errors.account }}</p>
-
-
-                    <!-- <div v-if="accountStatus === 'checking'">
-                        <p class="font-label-mono text-label-mono text-secondary flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">sync</span>
-                            <span class="loading-dots">檢查帳號是否可用中</span>
+                    
+                    <!-- local input validate -->
+                    <p v-if="errors.account"
+                    class="font-label-mono text-label-mono flex items-center gap-1.5 text-secondary/80">
+                        {{ errors.account }}
+                    </p>
+                    <!-- api validate -->
+                    <p v-else-if="accountCheckUi.message"
+                    :class="accountCheckUi.className"
+                    class="font-label-mono text-label-mono flex items-center gap-1.5">
+                            <span class="loading-dots">{{ accountCheckUi.message }}</span>
                         </p>
-                    </div>
-                    <div v-if="accountStatus === 'unable'">
-                        <p class="font-label-mono text-label-mono text-red-500 flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">sync</span>
-                            <span class="loading-dots">帳號不可用</span>
-                        </p>
-                    </div>
-                    <div v-if="accountStatus === 'able'">
-                        <p class="font-label-mono text-label-mono text-lime-500 flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">sync</span>
-                            <span class="loading-dots">帳號可用</span>
-                        </p>
-                    </div>
-                    <div v-if="accountStatus === 'fail'">
-                        <p class="font-label-mono text-label-mono text-yellow-500 flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">sync</span>
-                            <span class="loading-dots">檢查失敗，請稍後再試</span>
-                        </p>
-                    </div> -->
-
-
                 </div>
                 <!-- Password Field -->
                 <div class="space-y-stack-sm">
@@ -271,28 +258,55 @@ const goSubmit = handleSubmit(
                         v-model="password"
                         v-bind="passwordProps"
                             class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
-                            id="password" placeholder="至少 8 個字元，含英文字母及數字" type="password" />
-                        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant" type="button">
+                            id="password" placeholder="至少 8 個字元，含大小寫英文字母及1數字" :type="showpassword ? 'text' : 'password'" 
+                            autocomplete="new-password" />
+                        <button
+                        @click="showpassword = !showpassword"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant" type="button">
+                        <span v-if="showpassword ? false : true">
                             <span class="material-symbols-outlined">visibility_off</span>
+                        </span>
+                        <span v-else>
+                            <span class="material-symbols-outlined">visibility</span>
+                        </span>
+                        
                         </button>
                     </div>
-                    <div class="flex gap-1 mt-2">
+                    <!-- 中強度表 -->
+                    <!-- <div class="flex gap-1 mt-2">
                         <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
                         <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
                         <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
                         <div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
-                    </div>
-                    <p class="font-label-sm text-label-mono text-on-surface-variant">建議包含特殊符號以增強安全性</p>
+                    </div> -->
+                    <p class="font-label-sm text-label-mono text-on-surface-variant">{{ errors.password }}</p>
                 </div>
                 <!-- Confirm Password Field -->
                 <div class="space-y-stack-sm">
                     <label class="block font-body-md text-body-md font-bold text-primary"
                         for="confirm_password">再次確認密碼</label>
-                    <input
-                        v-model="passwordConfirm"
-                        v-bind="passwordConfirmProps"
-                        class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
-                        id="confirm_password" placeholder="請再次輸入密碼" type="password" />
+                    <div class="relative group">
+                        <input
+                            v-model="passwordConfirm"
+                            v-bind="passwordConfirmProps"
+                            class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
+                            id="confirm_password" placeholder="請再次輸入密碼" :type="showPasswordConfirm ? 'text' : 'password'" />
+
+                        <button
+                        @click="showPasswordConfirm = !showPasswordConfirm"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant" type="button">
+                            <span v-if="showPasswordConfirm ? false : true">
+                                <span class="material-symbols-outlined">visibility_off</span>
+                            </span>
+                            <span v-else>
+                                <span class="material-symbols-outlined">visibility</span>
+                            </span>
+                        </button>
+                    </div>
+                        <p 
+                        class="font-label-mono text-label-mono flex items-center gap-1.5 text-secondary/80">
+                            {{ errors.passwordConfirm }}
+                        </p>
                 </div>
                 <!-- Document Text Section (Placeholder for DOCUMENT_6 context) -->
                 <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30 mt-stack-lg">
