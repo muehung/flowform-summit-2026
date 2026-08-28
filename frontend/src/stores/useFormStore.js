@@ -14,6 +14,7 @@ const formDefault = {
         interests: [],
         //
         account:'',
+        password: ''
 }
 
 export const useFormStore = defineStore('formData', ()=>{
