@@ -1,12 +1,12 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
-import { ErrorMessage, useForm } from 'vee-validate'
-import Navbar from './../Components/NavbarComponent.vue'
-import Footer from './../Components/FooterComponent.vue'
+import { ErrorMessage, useForm } from 'vee-validate';
+import Navbar from './../Components/NavbarComponent.vue';
+import Footer from './../Components/FooterComponent.vue';
 import StepProgress from '../components/StepProgressComponent.vue';
-import { stepNumbers } from '../data/stepProgress.js'
+import { stepNumbers } from '../data/stepProgress.js';
 import { useFormStore } from '../stores/useFormStore.js';
 
 
@@ -56,7 +56,12 @@ jobTitle(val){
 // vee-validate
 const { values, errors, defineField, handleSubmit } = useForm({
     validationSchema: schemaForm,
-    initialValues: form.value,
+    initialValues: {
+        company: form.value.company,
+        department: form.value.department,
+        jobTitle: form.value.jobTitle,
+        interests: [ ...form.value.interests],
+    },
     validateOnBlur: false,
     validateOnModelUpdate: false,
 });
@@ -100,13 +105,22 @@ const interestOptions = [{
         label: 'DevOps',
         icon: 'hub',
 }];
-const handleInterests = function (labelName){
-    if( form.value.interests.includes(labelName) ){
-        form.value.interests = form.value.interests.filter((label)=> label !== labelName)
-    } else {
-        form.value.interests.push(labelName);
-    }
-};
+
+// v-model 全包了，所以不用 handleInterests()
+// const handleInterests = function (labelName){
+//     if( interests.value.includes(labelName) ){
+//         interests.value = interests.value.filter((label)=> label !== labelName)
+//     } else {
+//         interests.value.push(labelName);
+//     }
+
+//     // const isSelected = interests.value.includes(labelName);
+
+//     // interests.value = isSelected
+//     // ? interests.value.filter((label)=> label !== labelName)
+//     // : [...interests.value, labelName]
+// };
+
 
 // 流程 UI
 const stepProgress = stepNumbers.find((step)=> step.number === 2);
@@ -122,21 +136,26 @@ function goPrevious(){
 // vee-validate's handleSubmit
 const goSubmit = handleSubmit(
     // handleSubmit 第1個callback 只有全部欄位驗證通過才會執行
-    (ok) => {
-        console.log('✅ 驗證通過:', ok);
+    (submittedValues) => {
+        // console.log('✅ 驗證通過:', submittedValues);
+
         // UI 狀態值和 data資料分開（把 selectDepartment 或 departmentOther 統一存 finalDepartment 再傳回 store 的 department
         const finalDepartment = selectDepartment.value === 'other'
         ? departmentOther.value
         : selectDepartment.value
-        // finalDepartment 是普通字串
-        form.value = {
-            // 不能直接將一個全新物件賦值，保留 Step 1 的舊資料
-            ...form.value,
+
+        const step02Values = {
             company: company.value,
-            department: finalDepartment,
+            department: finalDepartment, // finalDepartment 是普通字串
             jobTitle: jobTitle.value,
             interests: interests.value,
         }
+
+        form.value.company = step02Values.company;
+        form.value.department = step02Values.department;
+        form.value.jobTitle = step02Values.jobTitle;
+        form.value.interests = step02Values.interests;
+        
         submitGoNext(3)
     },
     (ctx) => {
@@ -257,15 +276,23 @@ const goSubmit = handleSubmit(
                     <label class="font-body-md font-bold text-on-surface">感興趣的技術領域 (可多選)</label>
                     <div class="flex flex-wrap gap-2 mt-1">
                         <label v-for="option in interestOptions" :key="option.id"
-                        :class="form.interests.includes(option.label) ?  'border-secondary bg-secondary text-white'
+                        :class="interests.includes(option.label) ?  'border-secondary bg-secondary text-white'
                         : '' " 
                         class="px-4 py-2 rounded-full border border-outline-variant hover:border-secondary hover:cursor-pointer transition-all flex items-center gap-2 group">
                             <span class="material-symbols-outlined text-sm"
                                 style="font-variation-settings: 'FILL' 1;">{{ option.icon }}</span>
                                 {{ option.label }}
+                                
+                            <!-- :checked="interests.includes(option.label)"        @change="handleInterests(option.label)" 
+                                [說明] :checked ="顯示與否"，被 .sr-only 隱藏，單向被動接收
+                                  @change="" 靠著 handleInterests 修改 interests，雖 interestsProps 也有 @change，
+                                  但是 v-model 本身就可以處理 interests 有無選過
+                                   -->
                             <input type="checkbox"
-                            :checked="form.interests.includes(option.label)" @change="handleInterests(option.label)" 
-                            name="" id="" class="sr-only">
+                            v-model="interests"
+                            v-bind="interestsProps"
+                            :value="option.label"
+                            class="sr-only">
                         </label>
                     </div>
                 </div>
