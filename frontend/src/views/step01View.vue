@@ -1,10 +1,10 @@
 <script setup>
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router'
-import { ErrorMessage, useForm } from 'vee-validate'
-import Navbar from '../components/NavbarComponent.vue'
-import Footer from '../components/FooterComponent.vue'
+import { useRouter } from 'vue-router';
+import { ErrorMessage, useForm } from 'vee-validate';
+import Navbar from '../components/NavbarComponent.vue';
+import Footer from '../components/FooterComponent.vue';
 import StepProgress from '../components/StepProgressComponent.vue';
 // import { stepNumbers } from '../data/stepProgress.js' // step02 以後才用到
 import { useFormStore } from '../stores/useFormStore.js';
@@ -70,14 +70,27 @@ const [ identity, identityProps ] = defineField('identity');
 // vee-validate's handleSubmit
 // 這裡面的程式碼,只有全部欄位驗證通過才會執行
 const goSubmit = handleSubmit(
-    (ok) => {
-        console.log('✅ 驗證通過:', ok)
-        form.value = values;
+    (submittedValues) => {
+        const step02Values = {
+            nameX: submittedValues.nameX,
+            email: submittedValues.email,
+            phone: submittedValues.phone,
+            identity: submittedValues.identity
+        }
+
+        // console.log('✅ 驗證通過:', submittedValues)
+        form.value = {
+            ...values,
+            nameX: step02Values.nameX,
+            email: step02Values.email,
+            phone: step02Values.phone,
+            identity: step02Values.identity
+        }
         submitGoNext(2)
     },
     (ctx) => {
-        console.log('❌ 驗證失敗:', ctx.errors)
-        console.log(ErrorMessage)
+        // console.log('❌ 驗證失敗:', ctx.errors)
+        // console.log(ErrorMessage)
     }
 )
 </script>
