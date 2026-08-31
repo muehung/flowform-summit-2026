@@ -51,7 +51,3 @@ backend/
 * Pinia 跨頁資料管理
 * Vue Router 多步驟流程
 * Git 版本控制
-
-## 作者
-
-Cheyl
