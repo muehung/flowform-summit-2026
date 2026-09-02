@@ -11,40 +11,66 @@ import { useFormStore } from '../stores/useFormStore.js';
 
 const storeForm = useFormStore();
 const { form } = storeToRefs(storeForm);
-const { submitGoNext } = storeForm;
-const info = form.value;
-console.log(info.value)
-
+const registPayload = {
+    name: form.value.nameX,
+    email: form.value.email,
+    phone: form.value.phone,
+    identity: form.value.identity,
+    company: form.value.company,
+    department: form.value.department,
+    jobTitle: form.value.jobTitle,
+    interests: form.value.interests,
+    account: form.value.account,
+    password: form.value.password
+}
 
 const { errors, isSubmitting, handleSubmit } = useForm();
-
-
-// submitting time
-// function goSubmiting(){
-//     const isLoading = isSubmitting
-//   if( isSubmitting === false ) return 
-//   isSubmitting
-// }
-const isLoading = ref(isSubmitting)
 
 const router = useRouter();
 // 上一步 button
 function goPrevious(){
     router.push({ path: '/step03' })
-}
+};
 
 // 下一步 送出
-// const goSubmit = handleSubmit(
-//     (submitValues)=>{
-//     // post api for backend
-//     // loading
-//     // 失敗 跳提示
-//     // 成功 到下一頁
-//     },
-//     (ctx)=>{
+const goSubmit = handleSubmit(
+    async (submitValues)=>{
+    // submitting time
+    const isSubmitLoading = ref(isSubmitting);
 
-//     }
-// )
+    // post api for backend
+    try {
+        const res = await fetch("http://localhost:3000/api/registrations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify( registPayload )
+        })
+
+        if(res.status === 404) { throw new Error("404 錯誤")}
+        if(res.status === 500) { throw new Error("500 錯誤")}
+        if(!res.ok) { throw new Error(`回應錯誤：${res.status}`); }
+
+        const data = await res.json();
+        
+        // 存回 store，帶到下一頁
+        form.value = data;
+
+        return data.available
+
+    } catch (error) {
+        console.error('error: ', error.message);   
+    }
+    // 失敗 跳提示
+    // 成功 到下一頁
+        router.push({ path: '/success' })
+    },
+    (ctx)=>{
+        console.log('❌ 驗證失敗:', ctx.errors)
+        console.log(ErrorMessage)
+    }
+)
 
 
 
@@ -77,15 +103,15 @@ function goPrevious(){
                 <div class="space-y-2">
                     <div class="flex justify-between">
                         <span class="font-label-sm text-on-surface-variant">姓名</span>
-                        <span class="font-body-md font-semibold">{{ info.nameX }}</span>
+                        <span class="font-body-md font-semibold">{{ registPayload.name }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-label-sm text-on-surface-variant">電子郵件</span>
-                        <span class="font-body-md font-semibold">{{ info.email }}</span>
+                        <span class="font-body-md font-semibold">{{ registPayload.email }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-label-sm text-on-surface-variant">聯絡電話</span>
-                        <span class="font-body-md font-semibold">{{ info.phone }}</span>
+                        <span class="font-body-md font-semibold">{{ registPayload.phone }}</span>
                     </div>
                 </div>
             </div>
@@ -98,19 +124,19 @@ function goPrevious(){
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <span class="font-label-sm text-on-surface-variant">報名身份</span>
-                        <span v-if="info.identity"
-                        class="bg-tag-bg px-3 py-1 rounded-full font-label-mono text-label-mono text-primary">{{ info.identity }}</span>
+                        <span v-if="registPayload.identity"
+                        class="bg-tag-bg px-3 py-1 rounded-full font-label-mono text-label-mono text-primary">{{ registPayload.identity }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="font-label-sm text-on-surface-variant">所屬單位</span>
-                        <span class="font-body-md font-semibold">{{ info.company }}</span>
+                        <span class="font-body-md font-semibold">{{ registPayload.company }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="font-label-sm text-on-surface-variant">興趣標籤</span>
-                        <div v-if="info.interests.length > 0">
+                        <div v-if="registPayload.interests.length > 0">
                             <div class="flex flex-col items-start gap-2">
                                 
-                                <span v-for="tag in info.interests" :key="tag"
+                                <span v-for="tag in registPayload.interests" :key="tag"
                                 class="bg-tag-bg px-2 py-0.5 rounded text-[10px] font-label-mono">{{ tag }}</span>
                                 
                             </div>
@@ -141,7 +167,7 @@ function goPrevious(){
         <div class="bg-surface-container-low p-stack-md rounded-xl border-l-4 border-secondary mb-stack-lg">
             <h5 class="font-label-sm text-secondary mb-2 uppercase">Seminar Notice</h5>
             <div class="font-body-md text-on-surface-variant leading-relaxed">
-                <!-- {{DATA:DOCUMENT:DOCUMENT_6}} -->
+                {{ errors }}
             </div>
         </div>
         <!-- Warning Area -->
@@ -172,5 +198,5 @@ function goPrevious(){
     <!-- Footer -->
     <Footer />
 
-    <LoadingCover v-if="isLoading" />
+    <LoadingCover v-if="isSubmitLoading" />
 </template>
