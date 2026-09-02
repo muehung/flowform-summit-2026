@@ -36,14 +36,14 @@ const existingAccounts = [
 
 // 表單 identity 與後端報名身分的對照
 const registrationTypeMap = {
-    '軟體開發者 (Developer)': '一般',
-    '維運工程師 (DevOps)': '一般',
-    '在學學生 (Student)': '學生',
-    '技術經理 (Manager)': '一般',
-    '設計師 (Designer)': '一般',
-    '貴賓 (VIP)': 'VIP',
-    '講者 (Speaker)': 'VIP',
-    '民眾': '一般'
+    developer: '一般',
+    devops: '一般',
+    student: '學生',
+    manager: '一般',
+    designer: '一般',
+    vip: 'VIP',
+    speaker: 'VIP',
+    public: '一般'
 };
 
 /*
@@ -379,6 +379,9 @@ app.post(
 
                 name:
                     newRegistration.name,
+
+                email:
+                    newRegistration.email,
 
                 registrationType:
                     newRegistration
