@@ -124,7 +124,8 @@ const goSubmit = handleSubmit(
                     <div class="space-y-stack-sm">
                         <label class="block font-body-md font-bold text-on-surface" for="name">姓名
                             <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
-                            <span class="sr-only">必填</span>
+                            <span class="sr-only">必填</span> 
+                            <span class="text-gray-300"> 'admin', 'test', 'flowform', 'user123' </span>
                         </label>
                         <input
                             v-model="nameX" v-bind="nameXProps"
@@ -178,7 +179,10 @@ const goSubmit = handleSubmit(
                                 <option value="devops">維運工程師 (DevOps)</option>
                                 <option value="student">在學學生 (Student)</option>
                                 <option value="manager">技術經理 (Manager)</option>
-                                <option value="other">其他 (Other)</option>
+                                <option value="designer">設計師 (Designer)</option>
+                                <option value="vip">貴賓 (VIP)</option>
+                                <option value="designer">講者 (Speaker)</option>
+                                <option value="public">民眾 (General Public)</option>
                             </select>
                             <span v-if="errors.identity" class="text-red-500">{{ errors.identity }}</span>
                             <span
