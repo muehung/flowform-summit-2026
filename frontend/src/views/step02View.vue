@@ -220,6 +220,7 @@ const goSubmit = handleSubmit(
                             <input 
                             v-model="company" v-bind="companyProps"
                             ref="inputFirstFocus"
+                            maxlength="30"
                                 class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                                 id="company" placeholder="例如：FlowForm 科技" type="text"/>
                                 <span v-if="errors.company" class="text-red-500">{{errors.company}}</span>
@@ -253,6 +254,7 @@ const goSubmit = handleSubmit(
                         v-show="selectDepartment === 'other' "
                         v-model="departmentOther"
                         v-bind="departmentOtherProps"
+                        maxlength="30"
                         placeholder="請填其他部門名稱" class="w-full mt-2 px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white appearance-none">
                             
                         <span v-show="!selectDepartment" class="text-red-500">{{errors.selectDepartment}}</span>
@@ -268,6 +270,7 @@ const goSubmit = handleSubmit(
                     <input 
                     v-model="jobTitle"
                     v-bind="jobTitleProps"
+                    maxlength="20"
                         class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all bg-surface hover:bg-white"
                         id="job-title" placeholder="例如：資深開發工程師" type="text" />
                         <span v-if="errors.jobTitle" class="text-red-500">{{errors.jobTitle}}</span>
