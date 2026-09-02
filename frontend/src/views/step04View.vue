@@ -8,9 +8,30 @@ import Footer from './../Components/FooterComponent.vue';
 import StepProgress from './../components/StepProgressComponent.vue';
 import LoadingCover from './../components/LoadingCoverComponent.vue';
 import { useFormStore } from '../stores/useFormStore.js';
+import { identityOptions } from '../constants/identityOptions.js'
 
 const storeForm = useFormStore();
 const { form } = storeToRefs(storeForm);
+const { isSubmitting, handleSubmit } = useForm();
+
+
+
+const selectIdentityOption = identityOptions.find((option)=> option.value === form.value.identity)
+
+const registUiText = {
+    name: form.value.nameX || "未填寫",
+    email: form.value.email || "未填寫",
+    phone: form.value.phone || "未填寫",
+    // ?? 只處理 null, undefined, 不處理空字串
+    identity: selectIdentityOption?.label ?? "未填寫",
+    company: form.value.company || "未填寫",
+    department: form.value.department || "未填寫",
+    jobTitle: form.value.jobTitle || "未填寫",
+    interests: form.value.interests,
+    account: form.value.account || "未填寫",
+}
+
+// 要送出去的 payload
 const registPayload = {
     name: form.value.nameX,
     email: form.value.email,
@@ -24,7 +45,9 @@ const registPayload = {
     password: form.value.password
 }
 
-const { errors, isSubmitting, handleSubmit } = useForm();
+
+
+
 
 const router = useRouter();
 // 上一步 button
@@ -33,11 +56,11 @@ function goPrevious(){
 };
 
 // 下一步 送出
+const submitErrorMsg = ref("");
 const goSubmit = handleSubmit(
     async (submitValues)=>{
-    // submitting time
-    const isSubmitLoading = ref(isSubmitting);
-
+    submitErrorMsg.value = "";
+    
     // post api for backend
     try {
         const res = await fetch("http://localhost:3000/api/registrations", {
@@ -48,31 +71,35 @@ const goSubmit = handleSubmit(
             body: JSON.stringify( registPayload )
         })
 
-        if(res.status === 404) { throw new Error("404 錯誤")}
-        if(res.status === 500) { throw new Error("500 錯誤")}
-        if(!res.ok) { throw new Error(`回應錯誤：${res.status}`); }
-
         const data = await res.json();
+
+        if(!res.ok) { submitErrorMsg.value = data.message || `回應錯誤：${res.status}` }; 
         
-        // 存回 store，帶到下一頁
-        form.value = data;
+        // 存回 store，帶到下一頁，從 step04 之後都是 nameX
+        form.value = {
+            status: data.registration.status,
+            name: data.registration.name,
+            email: data.registration.email,
+            registrationType: data.registration.registrationType,
+            registrationId: data.registration.registrationId,
+        };
+
+        // 成功 到下一頁
+        router.push({ path: '/success' });
 
         return data.available
 
     } catch (error) {
-        console.error('error: ', error.message);   
+        // console.error('error: ', error.message);   
+        submitErrorMsg.value = error.message;
     }
-    // 失敗 跳提示
-    // 成功 到下一頁
-        router.push({ path: '/success' })
     },
     (ctx)=>{
-        console.log('❌ 驗證失敗:', ctx.errors)
-        console.log(ErrorMessage)
+        // console.log('❌ 驗證失敗:', ctx.errors)
+        // console.log(ErrorMessage)
+        submitErrorMsg.value = ctx.errors;
     }
 )
-
-
 
 </script>
 <template>
@@ -95,48 +122,48 @@ const goSubmit = handleSubmit(
         <!-- Summary Cards (Bento Style) -->
         <div class="bento-grid mb-stack-lg">
             <!-- Basic Info -->
-            <div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl">
+            <div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl mb-2">
                 <div class="flex items-center gap-2 mb-stack-sm text-primary">
                     <span class="material-symbols-outlined">person</span>
                     <h3 class="font-headline-md text-[18px]">基本資料</h3>
                 </div>
                 <div class="space-y-2">
-                    <div class="flex justify-between">
+                    <div class="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-3">
                         <span class="font-label-sm text-on-surface-variant">姓名</span>
-                        <span class="font-body-md font-semibold">{{ registPayload.name }}</span>
+                        <span class="min-w-0 break-words text-right font-body-md font-semibold break-words">{{ registPayload.name }}</span>
                     </div>
-                    <div class="flex justify-between">
+                    <div class="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-3">
                         <span class="font-label-sm text-on-surface-variant">電子郵件</span>
-                        <span class="font-body-md font-semibold">{{ registPayload.email }}</span>
+                        <span class="min-w-0 break-words text-right font-body-md font-semibold break-all">{{ registPayload.email }}</span>
                     </div>
-                    <div class="flex justify-between">
+                    <div class="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-3">
                         <span class="font-label-sm text-on-surface-variant">聯絡電話</span>
-                        <span class="font-body-md font-semibold">{{ registPayload.phone }}</span>
+                        <span class="min-w-0 break-words text-right font-body-md font-semibold">{{ registPayload.phone }}</span>
                     </div>
                 </div>
             </div>
             <!-- Identity -->
-            <div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl">
+            <div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl mb-2">
                 <div class="flex items-center gap-2 mb-stack-sm text-primary">
                     <span class="material-symbols-outlined">badge</span>
                     <h3 class="font-headline-md text-[18px]">身份確認</h3>
                 </div>
                 <div class="space-y-3">
-                    <div class="flex justify-between items-center">
+                    <div class="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-3">
                         <span class="font-label-sm text-on-surface-variant">報名身份</span>
-                        <span v-if="registPayload.identity"
-                        class="bg-tag-bg px-3 py-1 rounded-full font-label-mono text-label-mono text-primary">{{ registPayload.identity }}</span>
+                        <span v-if="registUiText.identity"
+                        class="min-w-0 break-words text-right font-body-md font-semibold">{{ registUiText.identity }}</span>
                     </div>
-                    <div class="flex justify-between items-center">
+                    <div class="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-3">
                         <span class="font-label-sm text-on-surface-variant">所屬單位</span>
-                        <span class="font-body-md font-semibold">{{ registPayload.company }}</span>
+                        <span class="min-w-0 break-words text-right font-body-md font-semibold break-words">{{ registUiText.company }}</span>
                     </div>
-                    <div class="flex justify-between items-center">
+                    <div class="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-3">
                         <span class="font-label-sm text-on-surface-variant">興趣標籤</span>
-                        <div v-if="registPayload.interests.length > 0">
-                            <div class="flex flex-col items-start gap-2">
+                        <div v-if="registUiText.interests.length > 0">
+                            <div class="min-w-0 flex flex-wrap justify-end gap-2">
                                 
-                                <span v-for="tag in registPayload.interests" :key="tag"
+                                <span v-for="tag in registUiText.interests" :key="tag"
                                 class="bg-tag-bg px-2 py-0.5 rounded text-[10px] font-label-mono">{{ tag }}</span>
                                 
                             </div>
@@ -164,12 +191,13 @@ const goSubmit = handleSubmit(
             </div>
         </div>
         <!-- Documentation Text Block -->
-        <div class="bg-surface-container-low p-stack-md rounded-xl border-l-4 border-secondary mb-stack-lg">
+        <!-- <div v-if=""
+        class="bg-surface-container-low p-stack-md rounded-xl border-l-4 border-secondary mb-stack-lg">
             <h5 class="font-label-sm text-secondary mb-2 uppercase">Seminar Notice</h5>
             <div class="font-body-md text-on-surface-variant leading-relaxed">
-                {{ errors }}
+                {{  }}
             </div>
-        </div>
+        </div> -->
         <!-- Warning Area -->
         <div class="flex items-center gap-3 p-4 bg-error-container/30 border border-error/20 rounded-lg mb-stack-md">
             <span class="material-symbols-outlined text-error">warning</span>
@@ -197,6 +225,7 @@ const goSubmit = handleSubmit(
 
     <!-- Footer -->
     <Footer />
+    <div v-if="submitErrorMsg" class="text-error">{{ submitErrorMsg }}</div>
 
-    <LoadingCover v-if="isSubmitLoading" />
+    <LoadingCover v-if="isSubmitting" />
 </template>
