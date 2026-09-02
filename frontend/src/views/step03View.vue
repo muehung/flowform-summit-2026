@@ -204,13 +204,16 @@ const goSubmit = handleSubmit(
             <form class="space-y-stack-md" @submit.prevent="goSubmit">
                 <!-- Username Field with Loading State -->
                 <div class="space-y-stack-sm">
-                    <label class="block font-body-md text-body-md font-bold text-primary" for="username">使用者名稱</label>            
+                    <label class="block font-body-md text-body-md font-bold text-primary" for="username">使用者名稱  
+                            <span class="text-gray-300"> 'admin', 'test', 'flowform', 'user123' </span>
+                        </label>
                     <div class="relative group">
                         <input data-private
                             v-model="account"
                             v-bind="accountProps"
                             @input="accountStatus = 'idle'"
                             ref="inputFirstFocus"
+                            maxlength="20"
                             class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/80 transition-all rounded-lg h-12 px-4 font-body-md"
                             id="username" placeholder="請輸入欲使用的帳號" 
                             autocomplete="username" type="text" />
@@ -257,6 +260,7 @@ const goSubmit = handleSubmit(
                         <input
                         v-model="password"
                         v-bind="passwordProps"
+                        maxlength="20"
                             class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all rounded-lg h-12 px-4 font-body-md"
                             id="password" placeholder="至少 8 個字元，含大小寫英文字母及1數字" :type="showpassword ? 'text' : 'password'" 
                             autocomplete="new-password" />
