@@ -8,12 +8,12 @@ import Footer from '../components/FooterComponent.vue';
 import StepProgress from '../components/StepProgressComponent.vue';
 // import { stepNumbers } from '../data/stepProgress.js' // step02 以後才用到
 import { useFormStore } from '../stores/useFormStore.js';
+import { identityOptions } from '../constants/identityOptions.js'
 
 
 const storeForm = useFormStore();
 const { form, inputFirstFocus } = storeToRefs(storeForm);
 const { submitGoNext, cancelRegistration } = storeForm;
-
 
 onMounted(()=>{
     inputFirstFocus.value.focus();
@@ -125,11 +125,11 @@ const goSubmit = handleSubmit(
                         <label class="block font-body-md font-bold text-on-surface" for="name">姓名
                             <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
                             <span class="sr-only">必填</span> 
-                            <span class="text-gray-300"> 'admin', 'test', 'flowform', 'user123' </span>
                         </label>
                         <input
                             v-model="nameX" v-bind="nameXProps"
                             ref="inputFirstFocus"
+                            maxlength="20"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
                             id="name" name="name" placeholder="請輸入完姓名" type="text" />
                              <span v-if="errors.nameX" class="text-red-500">{{errors.nameX}}</span>
@@ -142,6 +142,7 @@ const goSubmit = handleSubmit(
                         </label>
                         <input
                             v-model="email" v-bind="emailProps"
+                            maxlength="40"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
                             id="email" name="email" placeholder="example@itseminar.com" type="email" />
 
@@ -159,6 +160,7 @@ const goSubmit = handleSubmit(
                         </label>
                         <input
                             v-model="phone" v-bind="phoneProps"
+                            maxlength="14"
                             class="w-full h-12 px-4 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none"
                             id="phone" name="phone" placeholder="09XX-XXX-XXX" type="tel" />
                             <span v-if="errors.phone" class="text-red-500">{{errors.phone}}</span>
@@ -175,14 +177,9 @@ const goSubmit = handleSubmit(
                                 class="w-full h-12 px-4 pr-10 rounded-lg border border-outline-variant bg-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 outline-none appearance-none cursor-pointer"
                                 id="identity" name="identity" >
                                 <option disabled="" selected="" value="">請選擇您的身分</option>
-                                <option value="developer">軟體開發者 (Developer)</option>
-                                <option value="devops">維運工程師 (DevOps)</option>
-                                <option value="student">在學學生 (Student)</option>
-                                <option value="manager">技術經理 (Manager)</option>
-                                <option value="designer">設計師 (Designer)</option>
-                                <option value="vip">貴賓 (VIP)</option>
-                                <option value="designer">講者 (Speaker)</option>
-                                <option value="public">民眾 (General Public)</option>
+                                <option v-for="option in identityOptions" :key="option.id"
+                                :value="option.value">{{option.label}}</option>
+                                
                             </select>
                             <span v-if="errors.identity" class="text-red-500">{{ errors.identity }}</span>
                             <span
