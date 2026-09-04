@@ -1,8 +1,31 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
+import { useFormStore } from '../stores/useFormStore.js';
 
+const storeForm = useFormStore();
+const { form } = storeToRefs(storeForm);
+
+// UI title
+const isRegistered = form.value.status === "registered" ? true : false;
+
+// UI
+const formOnUi = {
+    title: form.value.status,
+    name: form.value.name,
+    id: form.value.registrationId,
+    type: form.value.registrationType,
+    email: form.value.email,
+}
+
+const router = useRouter();
+// 上一步 button
+function goHome(){
+    router.push({ path: '/step01' })
+};
 
 </script>
 <template>
@@ -41,48 +64,51 @@ import Footer from './../Components/FooterComponent.vue'
                 </div>
             </div>
             <div class="space-y-stack-md">
-                <h1
+                <h1 v-if="isRegistered"
                     class="font-display-lg text-display-lg text-primary tracking-tight md:text-display-lg text-headline-lg-mobile">
-                    報名成功!
+                    報名成功 !
                 </h1>
+                <div v-else>
+                    <h1 class="font-display-lg text-display-lg text-primary tracking-tight md:text-display-lg text-headline-lg-mobile mb-4">查無報名結果</h1>
+                    <p>請重新填寫報名資料，或由專人與您聯繫，請來信 <a href="mailto:service@flowform.com" target="_blank">service@flowform.com</a></p>
+                </div>
                 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-[600px] mx-auto leading-relaxed">
-                    您的研討會報名資料已成功送出。我們期待在活動中與您見面。相關活動資訊已寄送至您的信箱，請留意查收。
+                    哈囉！<span class="text-secondary">{{ formOnUi.name }}</span> 您的研討會報名資料已成功送出。我們期待在活動中與您見面。相關活動資訊已寄送至您的信箱<a href="{{ formOnUi.email }}" target="_blank" class="text-secondary"> {{ formOnUi.email }}</a>，請留意查收。
                 </p>
             </div>
             <!-- Bento Card for Event Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-stack-sm text-left">
+            <div class="grid grid-cols-2 gap-stack-sm text-left">
                 <div class="p-stack-md bg-surface-container-low rounded-xl border border-outline-variant/20">
-                    <span class="font-label-mono text-label-mono text-secondary mb-2 block">EVENT ID</span>
-                    <span class="font-headline-md text-headline-md text-primary">#FF-2026-082</span>
+                    <span class="font-label-mono text-label-mono text-secondary mb-2 block">報名編號</span>
+                    <span class="font-headline-md text-headline-mono text-primary">{{ formOnUi.id }}</span>
                 </div>
                 <div
-                    class="p-stack-md bg-surface-container-low rounded-xl border border-outline-variant/20 md:col-span-2 flex justify-between items-center">
-                    <div>
+                    class="p-stack-md bg-surface-container-low rounded-xl border border-outline-variant/20 md:col-span-1 flex justify-between items-center">
+                    <!-- <div>
                         <span class="font-label-mono text-label-mono text-secondary mb-2 block">STATUS</span>
                         <span class="font-headline-md text-headline-md text-success flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-success"></span>
-                            CONFIRMED
+                            {{ formOnUi.status }}
                         </span>
-                    </div>
+                    </div> -->
                     <div class="text-right">
-                        <span class="font-label-mono text-label-mono text-on-surface-variant block">REGISTRATION
-                            TYPE</span>
-                        <span class="font-body-md text-body-md font-bold">VIP Attendee</span>
+                        <span class="font-label-mono text-label-mono text-secondary block">報名類型</span>
+                        <span class="font-headline-md text-headline-md text-primary">{{ formOnUi.type }}</span>
                     </div>
                 </div>
             </div>
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-stack-md pt-stack-md">
-                <button
-                    class="w-full sm:w-auto px-10 py-4 bg-primary text-on-primary font-bold rounded-lg hover:scale-105 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2">
+                <button @click="goHome"
+                    class="w-full sm:w-auto px-10 py-4 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 active:scale-95 transition-all flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">home</span>
                     返回首頁
                 </button>
-                <button
+                <!-- <button
                     class="w-full sm:w-auto px-10 py-4 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 active:scale-95 transition-all flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">download</span>
                     下載邀請函
-                </button>
+                </button> -->
             </div>
         </div>
     </main>
