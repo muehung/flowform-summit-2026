@@ -215,7 +215,7 @@ async function fillTestData() {
                         </div>
                     </div>
                     <!-- Form Action Buttons -->
-                    <div class="pt-stack-md flex flex-col-reverse md:flex-row gap-4 justify-between items-center">
+                    <div class="pt-stack-md flex flex-col md:flex-row gap-4 justify-between items-center">
                         <button
                             @click="cancelRegistration"
                             class="w-full md:w-auto px-8 py-3 rounded-lg border border-primary text-primary font-bold hover:bg-surface-container-high transition-all-custom flex items-center justify-center gap-2"
@@ -223,7 +223,8 @@ async function fillTestData() {
                             清除
                         </button>
                         <button v-if="isDev"
-                        type="button" @click="fillTestData">
+                        type="button" @click="fillTestData"
+                        class="w-full md:w-auto px-8 py-3 rounded-lg border border-primary/30 text-primary/50 font-bold hover:bg-surface-container-high transition-all-custom flex items-center justify-center gap-2">
                         填入測試資料
                         </button>
                         <button class="w-full md:w-48 px-8 py-3 rounded-lg bg-primary text-white font-bold hover:bg-primary-container hover:shadow-lg transition-all-custom flex items-center justify-center gap-2 group"
