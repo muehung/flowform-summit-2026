@@ -54,11 +54,11 @@ jobTitle(val){
 }
 
 // vee-validate
-const { values, errors, defineField, handleSubmit } = useForm({
+const { errors, defineField, handleSubmit } = useForm({
     validationSchema: schemaForm,
     initialValues: {
         company: form.value.company,
-        department: form.value.department,
+        selectDepartment: form.value.department,
         jobTitle: form.value.jobTitle,
         interests: [ ...form.value.interests],
     },
