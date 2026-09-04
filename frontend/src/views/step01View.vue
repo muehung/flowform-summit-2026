@@ -10,7 +10,6 @@ import StepProgress from '../components/StepProgressComponent.vue';
 import { useFormStore } from '../stores/useFormStore.js';
 import { identityOptions } from '../constants/identityOptions.js'
 
-
 const storeForm = useFormStore();
 const { form, inputFirstFocus } = storeToRefs(storeForm);
 const { submitGoNext, cancelRegistration } = storeForm;
@@ -54,7 +53,7 @@ identity(val){
     }
 }}
 
-const { values, errors, defineField, handleSubmit } = useForm({
+const { errors, defineField, handleSubmit, setValues } = useForm({
     validationSchema: schemaForm,
     initialValues: form.value,
     validateOnBlur: false,
@@ -71,7 +70,7 @@ const [ identity, identityProps ] = defineField('identity');
 // 這裡面的程式碼,只有全部欄位驗證通過才會執行
 const goSubmit = handleSubmit(
     (submittedValues) => {
-        const step02Values = {
+        const step01Values = {
             nameX: submittedValues.nameX,
             email: submittedValues.email,
             phone: submittedValues.phone,
@@ -80,11 +79,11 @@ const goSubmit = handleSubmit(
 
         // console.log('✅ 驗證通過:', submittedValues)
         form.value = {
-            ...values,
-            nameX: step02Values.nameX,
-            email: step02Values.email,
-            phone: step02Values.phone,
-            identity: step02Values.identity
+            ...form.value,
+            nameX: step01Values.nameX,
+            email: step01Values.email,
+            phone: step01Values.phone,
+            identity: step01Values.identity
         }
         submitGoNext(2)
     },
@@ -93,6 +92,35 @@ const goSubmit = handleSubmit(
         // console.log(ErrorMessage)
     }
 )
+
+
+
+// Dev Testing 測試
+const isDev = import.meta.env.DEV;
+
+async function fillTestData() {
+  if (!isDev) return;
+
+  const { createTestFormData } = await import(
+    '../dev/testFormData.js'
+  );
+
+  const testData = createTestFormData();
+
+  // 保存 Step01～Step03 的完整測試資料
+  form.value = {
+    ...form.value,
+    ...testData
+  };
+
+  // 更新目前 Step01 看得到的欄位
+  setValues({
+    nameX: testData.nameX,
+    email: testData.email,
+    phone: testData.phone,
+    identity: testData.identity
+  });
+}
 </script>
 <template>
     <!-- Top Navigation Accent -->
@@ -193,6 +221,10 @@ const goSubmit = handleSubmit(
                             class="w-full md:w-auto px-8 py-3 rounded-lg border border-primary text-primary font-bold hover:bg-surface-container-high transition-all-custom flex items-center justify-center gap-2"
                             type="button">
                             清除
+                        </button>
+                        <button v-if="isDev"
+                        type="button" @click="fillTestData">
+                        填入測試資料
                         </button>
                         <button class="w-full md:w-48 px-8 py-3 rounded-lg bg-primary text-white font-bold hover:bg-primary-container hover:shadow-lg transition-all-custom flex items-center justify-center gap-2 group"
                             type="submit">
