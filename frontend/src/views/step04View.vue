@@ -71,8 +71,10 @@ const goSubmit = handleSubmit(
             body: JSON.stringify( registPayload )
         })
 
+        // data 是 response body 解析後的物件
         const data = await res.json();
 
+        // http 狀態不是 2XX
         if(!res.ok) { submitErrorMsg.value = data.message || `回應錯誤：${res.status}` }; 
         
         // 存回 store，帶到下一頁，從 step04 之後都是 nameX
@@ -90,13 +92,10 @@ const goSubmit = handleSubmit(
         return data.available
 
     } catch (error) {
-        // console.error('error: ', error.message);   
         submitErrorMsg.value = error.message;
     }
     },
     (ctx)=>{
-        // console.log('❌ 驗證失敗:', ctx.errors)
-        // console.log(ErrorMessage)
         submitErrorMsg.value = ctx.errors;
     }
 )
@@ -199,9 +198,15 @@ const goSubmit = handleSubmit(
             </div>
         </div> -->
         <!-- Warning Area -->
-        <div class="flex items-center gap-3 p-4 bg-error-container/30 border border-error/20 rounded-lg mb-stack-md">
+         <div v-if="!submitErrorMsg" class="flex items-center gap-3 p-4 bg-primary-container/10 border border-primary/20 rounded-lg mb-stack-md">
+            <span class="material-symbols-outlined text-primary">warning</span>
+            <p class="">送出後將無法修改，請確認所有欄位正確無誤。</p>
+        </div>
+         
+        <div v-if="submitErrorMsg" class="flex items-center gap-3 p-4 bg-error-container/30 border border-error/20 rounded-lg mb-stack-md">
             <span class="material-symbols-outlined text-error">warning</span>
-            <p class="font-body-md text-on-error-container font-semibold">送出後將無法修改，請確認所有欄位正確無誤。</p>
+            <!-- <p class="font-body-md text-on-error-container font-semibold">送出後將無法修改，請確認所有欄位正確無誤。</p> -->
+            <div class="font-body-md text-on-error-container font-semibold">{{ submitErrorMsg }}</div>
         </div>
         <!-- Action Buttons -->
         <div class="flex flex-col md:flex-row gap-4 justify-between items-center mt-stack-lg">
@@ -225,7 +230,6 @@ const goSubmit = handleSubmit(
 
     <!-- Footer -->
     <Footer />
-    <div v-if="submitErrorMsg" class="text-error">{{ submitErrorMsg }}</div>
 
     <LoadingCover v-if="isSubmitting" />
 </template>
