@@ -32,8 +32,14 @@ dist-ssr/
 
 # Other package managers
 package-lock.json
+# pnpm generated files
+/.pnpm/
+/.pnpm-needs-build-marker
 
-# Private project files
+# Runtime mock database
+/backend/data/database.json
+
+# project files
 /info-project/
 /old/
 /計劃文件/
