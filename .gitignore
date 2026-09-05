@@ -1,6 +1,7 @@
-/.DS_Store
+.DS_Store
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -8,25 +9,31 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies and builds
+node_modules/
+dist/
+dist-ssr/
 *.local
+
+# Environment variables
+.env
+.env.*
+!.env.example
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-package-lock.json
-.env
 
-info-project/
-old/
-計劃文件/
-test-*
+# Other package managers
+package-lock.json
+
+# Private project files
+/info-project/
+/old/
+/計劃文件/
