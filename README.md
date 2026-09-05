@@ -11,16 +11,34 @@ FlowForm 是一個使用 JavaScript、Vue 3 製作的多步驟活動報名表單
 ## 專案架構
 
 ```text
-src/
-├── components/    # 共用元件
-├── router/        # Vue Router 路由設定
-├── stores/        # Pinia 狀態管理
-├── views/         # Step01～Step04、成功頁及錯誤頁
-├── App.vue
-└── main.js
+## 專案架構
 
-backend/
-└── server.js      # Express API
+```text
+FlowForm/
+├── frontend/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── constants/
+│   │   ├── data/
+│   │   ├── dev/             # 開發測試相關程式
+│   │   ├── router/
+│   │   ├── stores/
+│   │   └── views/           # Step01～Step04 與報名成功頁
+│   └── package.json
+│
+├── backend/
+│   ├── api/
+│   │   └── server.js        # Express API 入口
+│   ├── data/
+│   │   └── database.json    # 模擬 API 使用的暫存資料
+│   ├── docs/
+│   │   └── api.md           # API 規格文件
+│   └── package.json
+│
+├── package.json
+├── pnpm-lock.yaml
+└── README.md
 ```
 
 ## 開發進度
@@ -30,10 +48,9 @@ backend/
 * [x] Step03 帳號與密碼表單
 * [x] Step04 報名資料確認頁
 * [x] 報名成功頁
-* [ ] 報名錯誤頁
-* [ ] 完成報名 API
+* [x] 完成報名 API
 * [ ] 加入路由守衛
-* [ ] 完成專案測試
+* [x] 完成專案測試
 * [ ] 部署專案
 
 ## 專案目的
@@ -50,4 +67,3 @@ backend/
 * VeeValidate 表單驗證
 * Pinia 跨頁資料管理
 * Vue Router 多步驟流程
-* Git 版本控制
