@@ -73,7 +73,7 @@ function goHome(){
                     <p>請重新填寫報名資料，或由專人與您聯繫，請來信 <a href="mailto:service@flowform.com" target="_blank">service@flowform.com</a></p>
                 </div>
                 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-[600px] mx-auto leading-relaxed">
-                    哈囉！<span class="text-secondary">{{ formOnUi.name }}</span> 您的研討會報名資料已成功送出。我們期待在活動中與您見面。相關活動資訊已寄送至您的信箱<a href="{{ formOnUi.email }}" target="_blank" class="text-secondary"> {{ formOnUi.email }}</a>，請留意查收。
+                    哈囉！<span class="text-secondary">{{ formOnUi.name }}</span> 您的研討會報名資料已成功送出。我們期待在活動中與您見面。相關活動資訊已寄送至您的信箱<a :href="'mailto: ' + formOnUi.email" target="_blank" class="text-secondary"> {{ formOnUi.email }}</a>，請留意查收。
                 </p>
             </div>
             <!-- Bento Card for Event Summary -->
@@ -102,7 +102,7 @@ function goHome(){
                 <button @click="goHome"
                     class="w-full sm:w-auto px-10 py-4 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 active:scale-95 transition-all flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">home</span>
-                    返回首頁
+                    再次報名
                 </button>
                 <!-- <button
                     class="w-full sm:w-auto px-10 py-4 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 active:scale-95 transition-all flex items-center justify-center gap-2">
