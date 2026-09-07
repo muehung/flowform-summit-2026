@@ -15,10 +15,9 @@ const { submitGoNext } = storeForm;
 
 // 驗證
 const schemaForm = {
-    async account(val){
+    account(val){
         if( !val || val?.trim() === "") { return "請填寫帳號" }
         if( val.length < 4 ) { return "請輸入超過 3 字元" }
-        // if ( await handleAccountApi(val) === false) { return "已經有重複帳號" }
         return true
     },
     password(val){
@@ -161,14 +160,19 @@ function goPrevious(){
     router.push({ path: '/step02' })
 }
 // 下一步 submit
+let submitErrorMsg = ref("");
 // vee-validate's handleSubmit
 const goSubmit = handleSubmit(
     (submittedValues) => {
-        // console.log('驗證通過:', submittedValues);
+        submitErrorMsg = "";
+        if (accountStatus.value !== 'available') {
+            submitErrorMsg = accountCheckUi.value.message ||  "請先完成帳號檢查";
+            return;
+        }
 
         const step03Values = {
-            account: account.value,
-            password: password.value,
+            account: submittedValues.account,
+            password: submittedValues.password,
         }
         
         form.value.account = step03Values.account;
@@ -177,8 +181,9 @@ const goSubmit = handleSubmit(
         submitGoNext(4)
     },
     (ctx) => {
-        console.log('驗證失敗:', ctx.errors)
-        console.log(ErrorMessage)
+        // validationSchema: schemaForm 指定規則 → handleSubmit 執行驗證 → 驗證失敗時，把錯誤放進第二個 callback 的 ctx.errors
+        submitErrorMsg.value = Object.values(ctx.errors)[0] || '請檢查表單內容';
+        console.log(ctx.errors)
     }
 )
 
@@ -323,6 +328,13 @@ const goSubmit = handleSubmit(
                         </div>
                     </div>
                 </div>
+
+                <div v-if="submitErrorMsg" class="flex items-center gap-3 p-4 bg-error-container/30 border border-error/20 rounded-lg mb-stack-md">
+                    <span class="material-symbols-outlined text-error">warning</span>
+                    <!-- <p class="font-body-md text-on-error-container font-semibold">送出後將無法修改，請確認所有欄位正確無誤。</p> -->
+                    <div class="font-body-md text-on-error-container font-semibold">{{ submitErrorMsg }}</div>
+                </div>
+
                 <!-- Form Actions -->
                 <div class="flex flex-col sm:flex-row items-center gap-stack-sm pt-stack-md">
                     <button
