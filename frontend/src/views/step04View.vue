@@ -75,22 +75,21 @@ const goSubmit = handleSubmit(
         const data = await res.json();
 
         // http 狀態不是 2XX
-        if(!res.ok) { submitErrorMsg.value = data.message || `回應錯誤：${res.status}` }; 
+        if(!res.ok) { submitErrorMsg.value = data.message || `回應錯誤：${res.status}`; return}
         
         // 存回 store，帶到下一頁，從 step04 之後都是 nameX
         form.value = {
+            ...form.value,
             status: data.registration.status,
             name: data.registration.name,
             email: data.registration.email,
             registrationType: data.registration.registrationType,
             registrationId: data.registration.registrationId,
+            password: '', // only registPayload is needed
         };
 
         // 成功 到下一頁
         router.push({ path: '/success' });
-
-        return data.available
-
     } catch (error) {
         submitErrorMsg.value = error.message;
     }
@@ -212,6 +211,7 @@ const goSubmit = handleSubmit(
         <div class="flex flex-col md:flex-row gap-4 justify-between items-center mt-stack-lg">
             <button
             @click="goPrevious"
+            :disabled="isSubmitting"
                 class="w-full md:w-auto px-8 py-3 rounded-lg border-2 border-primary text-primary font-bold hover:bg-primary/5 transition-all flex items-center justify-center gap-2 group">
                 <span
                     class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
@@ -219,6 +219,7 @@ const goSubmit = handleSubmit(
             </button>
             <button
                 @click="goSubmit"
+                :disabled="isSubmitting"
                 class="w-full md:w-auto px-12 py-3 bg-primary text-on-primary rounded-lg font-bold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
                 確認送出
                 <span class="material-symbols-outlined">send</span>
