@@ -96,6 +96,8 @@ const goSubmit = handleSubmit(
 
 
 // Dev Testing 測試
+const ENABLE_TEST_TOOLS = false;
+const showTestTools = import.meta.env.DEV && ENABLE_TEST_TOOLS;
 const isDev = import.meta.env.DEV;
 
 async function fillTestData() {
@@ -222,11 +224,11 @@ async function fillTestData() {
                             type="button">
                             清除
                         </button>
-                        <button v-if="isDev"
+                        <!-- <button v-if="isDev"
                         type="button" @click="fillTestData"
                         class="w-full md:w-auto px-8 py-3 rounded-lg border border-primary/30 text-primary/50 font-bold hover:bg-surface-container-high transition-all-custom flex items-center justify-center gap-2">
                         填入測試資料
-                        </button>
+                        </button> -->
                         <button class="w-full md:w-48 px-8 py-3 rounded-lg bg-primary text-white font-bold hover:bg-primary-container hover:shadow-lg transition-all-custom flex items-center justify-center gap-2 group"
                             type="submit">
                             下一步
