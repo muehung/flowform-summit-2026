@@ -35,6 +35,7 @@ package-lock.json
 # pnpm generated files
 /.pnpm/
 /.pnpm-needs-build-marker
+/.pnpm-store/
 
 # Runtime mock database
 /backend/data/database.json
