@@ -81,9 +81,31 @@ async function ensureDatabase() {
 
         const database = JSON.parse(content);
 
+        if (
+            database === null ||
+            typeof database !== 'object' ||
+            Array.isArray(database)
+        ) {
+            throw new Error(
+                'database.json 必須是物件'
+            );
+        }
+
+        if (!Object.hasOwn(database, 'registrations')) {
+            database.registrations = [];
+
+            await writeFile(
+                databaseFileUrl,
+                JSON.stringify(database, null, 2),
+                'utf-8'
+            );
+
+            return;
+        }
+
         if (!Array.isArray(database.registrations)) {
             throw new Error(
-                'database.json 缺少 registrations 陣列'
+                'database.json 的 registrations 必須是陣列'
             );
         }
     } catch (error) {
@@ -235,17 +257,16 @@ app.post(
             database.registrations
         );
 
-        // 模擬一秒的網路延遲
+        // 模擬1秒的網路延遲
         setTimeout(() => {
             return res.status(200).json({
                 message: available
                     ? '此帳號可以使用'
                     : '此帳號已被使用',
-
                 account: normalizedAccount,
                 available
             });
-        }, 1000);
+        }, account === 'slowtest' ? 1000 : 300);
     })
 );
 
