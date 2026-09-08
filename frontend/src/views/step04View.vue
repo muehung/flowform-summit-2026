@@ -63,7 +63,7 @@ const goSubmit = handleSubmit(
     
     // post api for backend
     try {
-        const res = await fetch("http://localhost:3000/api/registrations", {
+        const res = await fetch("/api/registrations", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

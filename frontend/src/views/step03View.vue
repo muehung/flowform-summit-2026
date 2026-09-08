@@ -68,7 +68,7 @@ const [ passwordConfirm, passwordConfirmProps ] = defineField('passwordConfirm')
 
 // account api
 const handleAccountApi = async function(y){
-    const url = "http://localhost:3000/api/check-account";
+    const url = "/api/check-account";
     try {
         const res = await fetch(url, {
             method: "POST",
