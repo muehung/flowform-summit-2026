@@ -1,0 +1,18 @@
+{
+  "name": "flowform-bcrypt-cost10-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail flowform-bcrypt-cost10-test --format pretty",
+    "deploy:pbkdf2": "wrangler deploy --config wrangler.pbkdf2.jsonc",
+    "tail:pbkdf2": "wrangler tail flowform-pbkdf2-test --format json"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
