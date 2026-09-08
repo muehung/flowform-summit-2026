@@ -39,6 +39,8 @@ package-lock.json
 
 # Runtime mock database
 /backend/data/database.json
+/backend/data/index.db
+/frontend/public/_worker.js
 
 # project files
 /info-project/

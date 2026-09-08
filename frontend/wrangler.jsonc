@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "flowform",
+  "main": "./dist/_worker.js",
+  "compatibility_date": "2026-09-08",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "flowform20260908",
+      "database_id": "7c50e27d-b4bc-41ac-b7c6-684bd2fa07ab",
+      "migrations_dir": "../backend/pagesfunction/migrations"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
