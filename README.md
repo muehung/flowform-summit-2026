@@ -11,9 +11,6 @@ FlowForm 是一個使用 JavaScript、Vue 3 製作的多步驟活動報名表單
 ## 專案架構
 
 ```text
-## 專案架構
-
-```text
 FlowForm/
 ├── frontend/
 │   ├── src/
@@ -28,10 +25,16 @@ FlowForm/
 │   └── package.json
 │
 ├── backend/
-│   ├── api/
-│   │   └── server.js        # Express API 入口
+│   ├── shared/              # 共用 controller、service、驗證與安全邏輯
+│   ├── express/
+│   │   ├── index.js         # 本機 Express 啟動入口
+│   │   └── sqliteDao.js     # node:sqlite DAO
+│   ├── pagesfunction/
+│   │   ├── index.js         # Cloudflare Pages Advanced Mode 入口
+│   │   ├── d1Dao.js         # Cloudflare D1 DAO
+│   │   └── migrations/      # D1 migration
 │   ├── data/
-│   │   └── database.json    # 模擬 API 使用的暫存資料
+│   │   └── index.db         # 本機 SQLite（不納入 Git）
 │   ├── docs/
 │   │   └── api.md           # API 規格文件
 │   └── package.json
