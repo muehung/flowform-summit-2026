@@ -9,6 +9,7 @@ import StepProgress from './../components/StepProgressComponent.vue';
 import LoadingCover from './../components/LoadingCoverComponent.vue';
 import { useFormStore } from '../stores/useFormStore.js';
 import { identityOptions } from '../constants/identityOptions.js'
+import { createRegistration } from '../api/registration.js'
 
 const storeForm = useFormStore();
 const { form } = storeToRefs(storeForm);
@@ -63,19 +64,7 @@ const goSubmit = handleSubmit(
     
     // post api for backend
     try {
-        const res = await fetch("/api/registrations", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify( registPayload )
-        })
-
-        // data 是 response body 解析後的物件
-        const data = await res.json();
-
-        // http 狀態不是 2XX
-        if(!res.ok) { submitErrorMsg.value = data.message || `回應錯誤：${res.status}`; return}
+        const data = await createRegistration(registPayload);
         
         // 存回 store，帶到下一頁，從 step04 之後都是 nameX
         form.value = {
