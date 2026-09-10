@@ -2,7 +2,8 @@ import { ref } from "vue"
 import { defineStore } from "pinia"
 import router from "../router/router";
 
-const formDefault = {
+const creatDefaultForm = ()=>{
+    return {
         nameX: '',
         email: '',
         phone: '',
@@ -15,21 +16,22 @@ const formDefault = {
         //
         account:'',
         password: ''
+    }
 }
 
-export const useFormStore = defineStore('formData', ()=>{
-    const form = ref({...formDefault});
+export const useFormStore = defineStore('form', ()=>{
+    const form = ref(creatDefaultForm());
     
     const inputFirstFocus =  ref(null);
 
-    const submitGoNext = function(num) {
+    function submitGoNext(num) {
             console.log(`Moving to step ${num}...`);
             router.push({ path: `/step0${num}` })
     }
 
-    const cancelRegistration = function() {
-        form.value = { ...formDefault };
+    function resetStoreValues() {
+        return form.value = creatDefaultForm();
     }
 
-    return { form, inputFirstFocus, submitGoNext, cancelRegistration }
+    return { form, inputFirstFocus, submitGoNext, resetStoreValues }
 });

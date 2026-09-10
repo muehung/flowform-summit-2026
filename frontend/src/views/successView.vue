@@ -2,12 +2,16 @@
 import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
+import { useForm } from 'vee-validate';
 import Navbar from './../Components/NavbarComponent.vue'
 import Footer from './../Components/FooterComponent.vue'
 import { useFormStore } from '../stores/useFormStore.js';
 
 const storeForm = useFormStore();
 const { form } = storeToRefs(storeForm);
+const { resetStoreValues } = storeForm;
+
+const { resetForm } = useForm();
 
 // UI title
 const isRegistered = form.value.status === "registered" ? true : false;
@@ -24,9 +28,12 @@ const formOnUi = {
 const router = useRouter();
 // 上一步 button
 function goHome(){
+    resetStoreValues(); // 先清 store data
+    resetForm({
+        values: { ...form.value }
+    });
     router.push({ path: '/step01' })
 };
-
 </script>
 <template>
     <!-- body以下 -->

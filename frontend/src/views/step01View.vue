@@ -12,7 +12,7 @@ import { identityOptions } from '../constants/identityOptions.js'
 
 const storeForm = useFormStore();
 const { form, inputFirstFocus } = storeToRefs(storeForm);
-const { submitGoNext, cancelRegistration } = storeForm;
+const { submitGoNext, resetStoreValues } = storeForm;
 
 onMounted(()=>{
     inputFirstFocus.value.focus();
@@ -53,7 +53,7 @@ identity(val){
     }
 }}
 
-const { errors, defineField, handleSubmit, setValues } = useForm({
+const { errors, defineField, handleSubmit, setValues, resetForm } = useForm({
     validationSchema: schemaForm,
     initialValues: form.value,
     validateOnBlur: false,
@@ -63,7 +63,6 @@ const [ nameX, nameXProps ] = defineField('nameX');
 const [ email, emailProps ] = defineField('email');
 const [ phone, phoneProps ] = defineField('phone');
 const [ identity, identityProps ] = defineField('identity');
-
 
 
 // vee-validate's handleSubmit
@@ -93,6 +92,15 @@ const goSubmit = handleSubmit(
     }
 )
 
+// 清空按鈕 reset data buttom
+const resetFormData = ()=>{
+    resetStoreValues(); // 先清 store data
+    resetForm({
+        values: { ...form.value }
+    });
+}
+
+
 
 
 // Dev Testing 測試
@@ -104,7 +112,7 @@ async function fillTestData() {
   if (!isDev) return;
 
   const { createTestFormData } = await import(
-    '../dev/testFormData.js'
+    '../test/testFormData.js'
   );
 
   const testData = createTestFormData();
@@ -219,7 +227,7 @@ async function fillTestData() {
                     <!-- Form Action Buttons -->
                     <div class="pt-stack-md flex flex-col md:flex-row gap-4 justify-between items-center">
                         <button
-                            @click="cancelRegistration"
+                            @click="resetFormData"
                             class="w-full md:w-auto px-8 py-3 rounded-lg border border-primary text-primary font-bold hover:bg-surface-container-high transition-all-custom flex items-center justify-center gap-2"
                             type="button">
                             清除
