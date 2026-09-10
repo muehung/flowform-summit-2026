@@ -8,6 +8,7 @@ import Footer from './../Components/FooterComponent.vue';
 import StepProgress from '../components/StepProgressComponent.vue';
 import { stepNumbers } from '../data/stepProgress.js';
 import { useFormStore } from '../stores/useFormStore.js';
+import { handleAccountApi } from '../api/account.js';
 
 const storeForm = useFormStore();
 const { form, inputFirstFocus } = storeToRefs(storeForm);
@@ -66,29 +67,6 @@ const [ account, accountProps ] = defineField('account', {
 const [ password, passwordProps ] = defineField('password');
 const [ passwordConfirm, passwordConfirmProps ] = defineField('passwordConfirm');
 
-// account api
-const handleAccountApi = async function(y){
-    const url = "/api/check-account";
-    try {
-        const res = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ account: y }),
-        });
-        if(res.status === 404 ) { throw new Error("404 錯誤") }
-        if(res.status === 500 ) { throw new Error("500 錯誤") }
-        if(!res.ok){ throw new Error(res.status + "error") }
-        const data = await res.json(); // 相當於 JSON.parse
-        
-        return data.available
-    } catch(err) {
-        // console.error(err.message)
-        throw new Error(err)
-    }
-};
-
 const accountStatus = ref("idle");
 // 5種狀態：idle checking available unavailable failed
 
@@ -142,10 +120,8 @@ const accountCheckUi = computed(()=>{
 // UI Password
 const showpassword = ref(false);
 
-
 // passwordConfirm
 const showPasswordConfirm = ref(false);
-// const passwordConfirm
 
 // 流程 UI
 const stepProgress = stepNumbers.find((step)=> step.number === 3);
@@ -160,13 +136,13 @@ function goPrevious(){
     router.push({ path: '/step02' })
 }
 // 下一步 submit
-let submitErrorMsg = ref("");
+const submitErrorMsg = ref("");
 // vee-validate's handleSubmit
 const goSubmit = handleSubmit(
     (submittedValues) => {
-        submitErrorMsg = "";
+        submitErrorMsg.value = "";
         if (accountStatus.value !== 'available') {
-            submitErrorMsg = accountCheckUi.value.message ||  "請先完成帳號檢查";
+            submitErrorMsg.value = accountCheckUi.value.message ||  "請先完成帳號檢查";
             return;
         }
 
