@@ -112,7 +112,7 @@ async function fillTestData() {
   if (!isDev) return;
 
   const { createTestFormData } = await import(
-    '../test/testFormData.js'
+    '../dev/testFormData.js'
   );
 
   const testData = createTestFormData();
