@@ -70,19 +70,26 @@ const [ passwordConfirm, passwordConfirmProps ] = defineField('passwordConfirm')
 const accountStatus = ref("idle");
 // 5種狀態：idle checking available unavailable failed
 
+const handleAccountInput = ()=> accountStatus.value = 'idle';
+
 const validateCheckAccount = async ()=>{
     // vee-validate's
     // 整份表單共用，呼叫執行驗證
     const { valid } = await validateField('account');
     if(valid === false) return;
-
     accountStatus.value = "checking";
+
+    const requestAccount = values.account;
     try {
-        const isAvailable = await handleAccountApi(account.value)
+        const isAvailable = await handleAccountApi(requestAccount);
+
+        if( requestAccount !== values.account ){ return }
         accountStatus.value = isAvailable
         ? "available"
-        : "unavailable"
+        : "unavailable";
+
     } catch(error) {
+        if( requestAccount !== values.account ){ return }
         accountStatus.value = "failed";
     }
 }
@@ -192,7 +199,7 @@ const goSubmit = handleSubmit(
                         <input data-private
                             v-model="account"
                             v-bind="accountProps"
-                            @input="accountStatus = 'idle'"
+                            @input="handleAccountInput"
                             ref="inputFirstFocus"
                             maxlength="20"
                             class="w-full bg-surface border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/80 transition-all rounded-lg h-12 px-4 font-body-md"
