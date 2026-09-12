@@ -1,12 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
   <title id="title">FlowForm favicon</title>
   <defs>
-    <linearGradient id="flow-gradient" x1="11" y1="8" x2="53" y2="56" gradientUnits="userSpaceOnUse">
+    <linearGradient id="flow-gradient" x1="8" y1="8" x2="53" y2="56" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ff3cac"/>
       <stop offset="0.5" stop-color="#784ba0"/>
       <stop offset="1" stop-color="#2b86c5"/>
     </linearGradient>
   </defs>
+  <path d="M18 14C7 20 7 44 18 50" fill="none" stroke="url(#flow-gradient)" stroke-width="5" stroke-linecap="round" opacity=".58"/>
   <path d="M19 14c20 0 26 8 26 18s-6 18-26 18" fill="none" stroke="url(#flow-gradient)" stroke-width="8" stroke-linecap="round"/>
   <circle cx="18" cy="14" r="7" fill="#ff3cac"/>
   <circle cx="45" cy="32" r="7" fill="#784ba0"/>
