@@ -13,7 +13,7 @@
       "binding": "DB",
       "database_name": "flowform20260908",
       "database_id": "7c50e27d-b4bc-41ac-b7c6-684bd2fa07ab",
-      "migrations_dir": "../backend/pagesfunction/migrations"
+      "migrations_dir": "../backend/worker/migrations"
     }
   ],
   "observability": {

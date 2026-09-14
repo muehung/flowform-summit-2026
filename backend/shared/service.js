@@ -1,4 +1,5 @@
 import {
+    REGISTRATION_DATA_TTL_MS,
     SESSION_TTL_MS,
     createPasswordRecord,
     createSessionToken,
@@ -16,10 +17,10 @@ import {
 
 function publicUser(user, registration) {
     return {
-        registrationId: registration?.registrationId,
+        registrationId: registration?.registrationId ?? null,
         account: user.account,
-        name: registration?.name,
-        registrationType: registration?.registrationType,
+        name: registration?.name ?? null,
+        registrationType: registration?.registrationType ?? null,
         role: user.role
     };
 }
@@ -66,7 +67,7 @@ export function createRegistrationService({ dao, now = Date.now }) {
             }
 
             const createdAt = now();
-            const expiresAt = createdAt + SESSION_TTL_MS;
+            const expiresAt = createdAt + REGISTRATION_DATA_TTL_MS;
             const userId = crypto.randomUUID();
             const registrationId = crypto.randomUUID();
             const password = await createPasswordRecord(data.password);
@@ -80,6 +81,8 @@ export function createRegistrationService({ dao, now = Date.now }) {
                         passwordSalt: password.salt,
                         passwordHash: password.hash,
                         role: 'user',
+                        retentionExempt: 0,
+                        seedBatch: null,
                         createdAt,
                         expiresAt
                     },
@@ -96,6 +99,8 @@ export function createRegistrationService({ dao, now = Date.now }) {
                         department: data.department?.trim() ?? '',
                         jobTitle: data.jobTitle?.trim() ?? '',
                         interestsJson: JSON.stringify(data.interests ?? []),
+                        retentionExempt: 0,
+                        seedBatch: null,
                         createdAt,
                         expiresAt
                     }
@@ -154,10 +159,16 @@ export function createRegistrationService({ dao, now = Date.now }) {
             return { user: publicUser(user, registration) };
         },
 
-        async getMyRegistration(token) {
+        async getRegistrations(token) {
             const user = await authenticate(token);
             if (!user) throw new ApiError(401, 'UNAUTHENTICATED', '尚未登入');
-            return { registration: await dao.findRegistrationByUserId(user.id) };
+            if (user.role === 'admin') {
+                return { registrations: await dao.findAllRegistrations() };
+            }
+            if (user.role === 'user') {
+                return { registrations: await dao.findRegistrationsByUserId(user.id) };
+            }
+            throw new ApiError(403, 'FORBIDDEN', '沒有權限查看報名資料');
         }
     };
 }

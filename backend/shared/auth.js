@@ -1,4 +1,5 @@
-export const SESSION_TTL_MS = 30 * 60 * 1000;
+export const REGISTRATION_DATA_TTL_MS = 12 * 60 * 60 * 1000;
+export const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
 export const PBKDF2_ITERATIONS = 100000;
 const DERIVED_KEY_LENGTH_BITS = 256;
 const PASSWORD_SALT_LENGTH_BYTES = 16;
@@ -78,6 +79,7 @@ export function createSessionToken() {
 
 export async function runDummyPasswordCheck(password) {
     return verifyPassword(password, {
+        password_iterations: PBKDF2_ITERATIONS,
         password_salt: toBase64(new Uint8Array(PASSWORD_SALT_LENGTH_BYTES)),
         password_hash: toBase64(new Uint8Array(DERIVED_KEY_LENGTH_BITS / 8))
     });

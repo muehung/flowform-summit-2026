@@ -1,7 +1,7 @@
 /*
- * Pages Advanced Mode 的 Worker entry。
+ * Cloudflare Worker entry（同時處理 API 與靜態資產）。
  *
- * /api/* 使用 D1 adapter；其他請求交給 Pages 靜態資產。
+ * /api/* 使用 D1 adapter；其他請求交給 Workers Static Assets。
  */
 import { handleApiRequest } from './api.js';
 
