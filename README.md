@@ -56,7 +56,7 @@ FlowForm/
 └── backend/
     ├── shared/            # 共用驗證與業務邏輯
     ├── express/           # 本機 Express 與 SQLite
-    ├── pagesfunction/     # Cloudflare Worker 與 D1
+    ├── worker/           # Cloudflare Worker 與 D1
     └── docs/              # API 文件
 ```
 
