@@ -17,4 +17,16 @@ export const createRegistration = async (payload)=>{
         throw new Error(errMsg)
     }
     return data
-}
+};
+
+
+
+export const getRegistrationsApi = async ()=>{
+    const res = await fetch(`${baseApi}/registrations`, {
+        credentials: "include",
+    });
+    if(!res.ok){ throw new Error(`${res.status} 錯誤`)};
+
+    const data = await res.json();
+    return data.registrations
+};
