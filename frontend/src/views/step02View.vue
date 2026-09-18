@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { ErrorMessage, useForm } from 'vee-validate';
-import Navbar from './../Components/NavbarComponent.vue';
+import Navbar from './../components/NavbarComponent.vue';
 import Footer from './../Components/FooterComponent.vue';
 import StepProgress from '../components/StepProgressComponent.vue';
 import { stepNumbers } from '../data/stepProgress.js';
