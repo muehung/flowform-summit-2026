@@ -1,6 +1,6 @@
 <template>
     <!-- Footer -->
-    <footer class="bg-surface-container-low border-t border-outline-variant mt-stack-lg">
+    <footer class="bg-surface-container-low border-t border-outline-variant">
     <div class="flex flex-col md:flex-row justify-between items-center w-full px-gutter max-w-[800px] mx-auto py-10 gap-stack-sm">
     <div class="flex flex-col items-center md:items-start gap-2">
     <div class="flex items-center gap-2">
