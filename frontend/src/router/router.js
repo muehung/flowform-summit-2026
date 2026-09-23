@@ -7,7 +7,7 @@ import Step03View from '../views/step03View.vue'
 import Step04View from '../views/step04View.vue'
 import successView from '../views/successView.vue'
 import loginView from '../views/loginView.vue'
-import NotFoundComponent from '../components/NotFoundComponent.vue'
+import NotFoundComponent from '../components/NotFound.vue';
 
 const router = createRouter({
     history: createWebHistory(),
