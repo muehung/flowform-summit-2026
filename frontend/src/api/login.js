@@ -8,8 +8,8 @@ export const handleLoginApi = async (acValue, pwValue)=>{
         },
         body: JSON.stringify({"account": acValue, "password": pwValue})
     });
-    if(!res.ok){ throw new Error(`${res.status} 錯誤`)};
-
     const data = await res.json();
+    if(!res.ok){ throw new Error(`${data.message}`)};
+
     return data.user
 }
