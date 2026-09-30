@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { handleLoginApi } from '../api/login'
 import { handleLogoutApi } from '../api/logout'
+import { handleCheckLoginApi } from '../api/auth/me'
 
 export const useAuthStore = defineStore('user', ()=>{
 
@@ -10,6 +11,29 @@ export const useAuthStore = defineStore('user', ()=>{
     const isLoggedIn = ref(false);
 
     const sessionChecked = ref(false);
+
+    async function restoreSession(){
+        userInfo.value = null;
+        isLoggedIn.value = false;
+        sessionChecked.value = false;
+
+        try {
+            const user = await handleCheckLoginApi();
+            userInfo.value = user;
+            isLoggedIn.value = true;
+            sessionChecked.value = true;
+            
+        } catch (error) {
+            userInfo.value = null;
+            isLoggedIn.value = false;
+
+            if(error.status === 401) {
+                sessionChecked.value = true;
+                return
+            }
+            throw error
+        }
+    }
 
     async function login(account, pw){
             const dataUser = await handleLoginApi(account, pw)
@@ -21,7 +45,7 @@ export const useAuthStore = defineStore('user', ()=>{
             return dataUser
     };
 
-    async function goLogout(){
+    async function logout(){
         await handleLogoutApi()
         // 登出成功，清除登出資料
         userInfo.value = null;
@@ -29,5 +53,5 @@ export const useAuthStore = defineStore('user', ()=>{
         sessionChecked.value = true;
     }
     
-    return { userInfo, isLoggedIn, sessionChecked, login, goLogout }
+    return { userInfo, isLoggedIn, sessionChecked, restoreSession, login, logout }
 })
