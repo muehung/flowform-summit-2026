@@ -8,9 +8,8 @@ const { isLoggedIn } = storeToRefs(useAuth);
 const router = useRouter();
 
 const handleLogout = async ()=>{
-    await useAuth.goLogout();
+    await useAuth.logout();
     await router.replace('/login')
-    console.log('isLoggedIn: ', isLoggedIn.value)
 }
 
 </script>
