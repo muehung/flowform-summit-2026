@@ -8,7 +8,7 @@ const { isLoggedIn } = storeToRefs(useAuth);
 const router = useRouter();
 
 const handleLogout = async () => {
-  await useAuth.goLogout();
+  await useAuth.logout();
   await router.replace('/login')
   console.log('isLoggedIn: ', isLoggedIn.value)
 }
@@ -16,7 +16,7 @@ const handleLogout = async () => {
 
 <template>
   <header
-    class="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    class="top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
     <div class="h-[2px] w-full bg-gradient-to-r from-gradient-start via-gradient-middle to-gradient-end"></div>
     <div class="h-16 w-full px-gutter flex items-center justify-between">
       <div class="flex items-center gap-6">
@@ -30,13 +30,13 @@ const handleLogout = async () => {
           </div>
         </RouterLink>
 
-        <nav class="hidden md:flex items-center gap-6 ml-4" data-active-classes="text-secondary font-headline-md"><a
-            aria-current="page" class="transition-colors text-secondary font-headline-md" data-path="registration-list"
-            href="#">報名資料</a><a
-            class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors"
-            data-path="seminar-overview" href="#">場次總覽</a><a
-            class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors"
-            data-path="system-settings" href="#">系統設定</a></nav>
+        <!-- <nav class="hidden md:flex items-center gap-6 ml-4" data-active-classes="text-secondary font-headline-md">
+          <a aria-current="page" class="transition-colors text-secondary font-headline-md" data-path="registration-list"
+            href="#">報名資料</a>
+          <a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors"
+            data-path="seminar-overview" href="#">場次總覽</a>
+          <a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors"
+            data-path="system-settings" href="#">系統設定</a></nav> -->
       </div>
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-3 pl-3 py-1 pr-2 rounded-full">
