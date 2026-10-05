@@ -19,9 +19,10 @@ const loadRegistrations = async ()=>{
     isLoading.value = true;
     try {
         registrations.value = await getRegistrationsApi()
-        isLoading.value = false;
     } catch(error) {
         errorMessage.value = error;
+    } finally {
+        isLoading.value = false;
     }
 }
 onMounted(loadRegistrations);
@@ -32,24 +33,39 @@ const currentPage = ref(1);
 // 第1頁 1  - 10 筆 [0 - 10]
 // 第2頁 11 - 20 筆 [10 - 20]
 // 第3頁 21 - 30 筆 [20 - 30]
-const start = (currentPage.value - 1) * PAGINATION_MAX.value;
-const end = currentPage.value * PAGINATION_MAX.value;
-const slicedRegistrations = computed(()=> {
-        registrations.value.slice(start, end)
+const handleSliceData = computed(()=> {
+    const start = (currentPage.value - 1) * PAGINATION_MAX.value;
+    const end = currentPage.value * PAGINATION_MAX.value;
+    
+        return registrations.value.slice(start, end)
     }
 )
 
+watch(PAGINATION_MAX, ()=>{
+    currentPage.value = 1;
+})
+
+const slicedRegistrations = handleSliceData;
 
 const setPage = (page)=>{
     currentPage.value = page;
-    slicedRegistrations();
 };
-const pageTotal = computed(()=>{
+
+
+const startPage = computed(()=> {
+    return ( currentPage.value * PAGINATION_MAX.value ) - PAGINATION_MAX.value + 1 
+});
+const endPage = computed(()=> {
+    return Math.min(currentPage.value * PAGINATION_MAX.value, registrations.value.length)
+});
+
+const totalPage = computed(()=>{
     return Math.ceil(registrations.value.length / PAGINATION_MAX.value);
 });
 
 // UI select value
-const pageDisplayPer = ref(PAGINATION_MAX);
+// const pageDisplayPer = ref(PAGINATION_MAX);
+
 
 
 </script>
@@ -143,17 +159,17 @@ const pageDisplayPer = ref(PAGINATION_MAX);
                     class="divide-y divide-surface-container-low font-body-md text-xs">
                         <tr v-for="(n,index) in slicedRegistrations" :key="n.registrationId"
                         class="hover:bg-surface-container-low/60 transition-colors">
-                            <td class="px-5 py-4 font-semibold text-on-surface">{{ index + 1 }}</td>
+                            <td class="px-5 py-4 font-semibold text-on-surface">{{ (currentPage - 1 ) * PAGINATION_MAX + index + 1 }}</td>
                              <td class="px-5 py-4 font-label-mono font-medium text-secondary">{{ n.registrationId }}</td>
-                             <td class="px-5 py-4 font-semibold text-on-surface">{{ n.name }}</td>
-                            <td class="px-5 py-4 font-label-mono text-on-surface">{{ n.email }}</td>
+                             <td class="px-5 py-4 font-semibold text-on-surface break-keep">{{ n.name }}</td>
+                            <td class="px-5 py-4 font-label-mono text-on-surface break-keep">{{ n.email }}</td>
                             <td class="px-5 py-4">
                                 <span v-if="n.jobTitle"
-                                    class="px-2.5 py-1 rounded bg-surface-container text-on-surface font-medium text-[11px]">{{ n.jobTitle }}</span>
+                                    class="px-2.5 py-1 rounded bg-surface-container text-on-surface font-medium text-[11px] break-keep">{{ n.jobTitle }}</span>
                             </td>
-                            <td class="px-5 py-4 font-medium text-on-surface">{{ n.company }}</td>
+                            <td class="px-5 py-4 font-medium text-on-surface break-keep">{{ n.company }}</td>
                             <td class="px-5 py-4"><span
-                                    class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-secondary font-medium text-[11px]">{{ n.registrationType }}</span>
+                                    class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-secondary font-medium text-[11px] break-keep">{{ n.registrationType }}</span>
                             </td>
                             <!-- <td class="px-5 py-4 font-label-mono text-on-surface-variant">2024/05/20 14:32</td> -->
                              <td class="px-5 py-4 font-label-mono text-on-surface-variant">{{ n.createdAt }}</td>
@@ -167,20 +183,22 @@ const pageDisplayPer = ref(PAGINATION_MAX);
                 <div class="flex items-center gap-4 text-xs font-label-mono text-on-surface-variant">
                     <div class="flex items-center gap-1.5"><span>每頁顯示</span>
                         <div class="relative">
-                            <select v-model="pageDisplayPer"
+                            <select v-model="PAGINATION_MAX"
                             class="appearance-none bg-surface-container-low text-on-surface pl-2.5 pr-6 py-1 rounded-lg text-xs font-label-mono focus:outline-none cursor-pointer">
                                 <option selected="" value="10">10 筆</option>
-                                <option value="20">20 筆</option>
+                                <option value="25">25 筆</option>
                                 <option value="50">50 筆</option>
                             </select><span
                                 class="material-symbols-outlined pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[14px] text-on-surface-variant">expand_more</span>
                         </div>
-                    </div><span class="text-outline-variant">|</span><span>顯示第 1 至 {{ pageTotal }} 筆，共 {{ registrations?.length || 0 }} 筆</span>
+                    </div>
+                    <span class="text-outline-variant">|</span>
+                    <span v-if="registrations.length > 0">顯示第 {{ startPage }} 至 {{ endPage }} 筆，共 {{ registrations?.length }} 筆</span>
+                    <span v-else>
+                        共 0 筆
+                    </span>
                 </div>
-                
-<!-- const currentPage
-const pageTotal
-const setPage -->
+
                 <nav aria-label="分頁導航" class="flex items-center gap-1">
                     <button @click="setPage( currentPage - 1 )"
                     class="px-2.5 py-1.5 rounded-lg font-label-mono text-xs flex items-center gap-1"
@@ -188,7 +206,7 @@ const setPage -->
                         :disabled="currentPage === 1" type="button"><span
                             class="material-symbols-outlined text-[14px]">chevron_left</span><span>上一頁</span></button>
                     <div
-                     v-for="n in pageTotal" :key="n"
+                     v-for="n in totalPage" :key="n"
                      class="flex items-center gap-1 px-1">
                         <button
                         @click="setPage(n);"
@@ -201,8 +219,8 @@ const setPage -->
                     </div>
                     <button @click="setPage( currentPage + 1 )"
                         class="px-2.5 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-mono text-xs transition-colors flex items-center gap-1"
-                        :class="currentPage === pageTotal ? 'bg-surface-container-low text-outline-variant  cursor-not-allowed' : 'bg-surface-container-low hover:bg-surface-container text-on-surface font-label-mono' "
-                        :disabled="currentPage === pageTotal"
+                        :class="currentPage >= totalPage ? 'bg-surface-container-low text-outline-variant  cursor-not-allowed' : 'bg-surface-container-low hover:bg-surface-container text-on-surface font-label-mono' "
+                        :disabled="currentPage >= totalPage"
                         type="button"><span>下一頁</span><span
                             class="material-symbols-outlined text-[14px]">chevron_right</span></button>
                 </nav>
