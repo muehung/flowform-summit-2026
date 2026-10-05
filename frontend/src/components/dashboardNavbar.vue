@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/useAuthStore'
 
 const useAuth = useAuthStore();
-const { isLoggedIn } = storeToRefs(useAuth);
+const { isLoggedIn, userInfo } = storeToRefs(useAuth);
 const router = useRouter();
 
 const handleLogout = async () => {
@@ -20,7 +20,7 @@ const handleLogout = async () => {
     <div class="h-[2px] w-full bg-gradient-to-r from-gradient-start via-gradient-middle to-gradient-end"></div>
     <div class="h-16 w-full px-gutter flex items-center justify-between">
       <div class="flex items-center gap-6">
-        <RouterLink to="/">
+        <RouterLink to="/dashboard">
           <div class="flex items-center gap-3">
             <div
               class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-on-primary font-headline-md text-headline-md font-bold">
@@ -40,6 +40,10 @@ const handleLogout = async () => {
       </div>
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-3 pl-3 py-1 pr-2 rounded-full">
+          <RouterLink v-if="isLoggedIn" to="/"
+            class="text-on-surface-variant bg-white hover:bg-secondary hover:text-white   hover:shadow-primary/20 transition-all text-md  rounded-lg shadow-md flex items-center justify-center px-5 py-2">
+            再次報名
+          </RouterLink>
           <RouterLink v-if="!isLoggedIn" to="/login"
             class="text-on-surface-variant bg-white hover:bg-secondary hover:text-white   hover:shadow-primary/20 transition-all text-md  rounded-lg shadow-md flex items-center justify-center px-5 py-2">
             登入
@@ -51,8 +55,8 @@ const handleLogout = async () => {
                 class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors text-2xl w-8 h-8 text-center">
                 account_circle</div>
               <div class="hidden sm:flex flex-col text-left"><span
-                  class="font-body-md text-body-md font-semibold text-on-surface leading-tight">Admin</span><span
-                  class="font-label-mono text-label-mono text-on-surface-variant text-[11px] leading-tight">身分：管理員</span>
+                  class="font-body-md text-body-md font-semibold text-on-surface leading-tight">{{ userInfo?.name || userInfo?.account }}</span><span
+                  class="font-label-mono text-label-mono text-on-surface-variant text-[11px] leading-tight">身分：{{ userInfo.role === 'admin' ? '管理員' : '一般使用者' }}</span>
               </div>
               <div class="h-4 w-px bg-outline-variant mx-1 hidden sm:block"></div>
               <button @click="handleLogout"
