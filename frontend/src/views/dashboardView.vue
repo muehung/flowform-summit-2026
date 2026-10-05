@@ -63,10 +63,23 @@ const totalPage = computed(()=>{
     return Math.ceil(registrations.value.length / PAGINATION_MAX.value);
 });
 
-// UI select value
-// const pageDisplayPer = ref(PAGINATION_MAX);
 
+// const createdAtFormatter = new Intl.DateTimeFormat('zh-TW', {
+//     timeZone: 'Asia/Taipei',
+//     year: 'numeric',
+//     month: '2-digit',
+//     day: '2-digit',
+//     hour: '2-digit',
+//     minute: '2-digit',
+//     hour12: false,
+// });
 
+const formatCreatedAt = (timestamp) => {
+    return new Date(timestamp).toLocaleString('zh-TW', {
+        timeZone: 'Asia/Taipei',
+        hour12: false,
+    });
+};
 
 </script>
 <template>
@@ -135,22 +148,22 @@ const totalPage = computed(()=>{
                             <th class="px-5 py-3.5" scope="col">No.
                             </th>
                             <th class="px-5 py-3.5" scope="col">報名編號
-                                <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500 hover:bg-purple-100">v</button>
+                                <!-- <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500 hover:bg-purple-100">v</button> -->
                             </th>
                             <th class="px-5 py-3.5" scope="col">姓名
                             </th>
                             <th class="px-5 py-3.5" scope="col">Email
                             </th>
                             <th class="px-5 py-3.5" scope="col">身分類別
-                                <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500">v</button>
+                                <!-- <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500">v</button> -->
                             </th>
                             <th class="px-5 py-3.5" scope="col">公司組織
                             </th>
                             <th class="px-5 py-3.5" scope="col">報名類型
-                                <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500">v</button>
+                                <!-- <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500">v</button> -->
                             </th>
                             <th class="px-5 py-3.5" scope="col">報名時間
-                                <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500">v</button>
+                                <!-- <button type="button" class="bg-white py-.5 px-1.5 rounded-md text-black/40 hover:text-purple-500">v</button> -->
                             </th>
                         </tr>
                     </thead>
@@ -172,7 +185,7 @@ const totalPage = computed(()=>{
                                     class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-secondary font-medium text-[11px] break-keep">{{ n.registrationType }}</span>
                             </td>
                             <!-- <td class="px-5 py-4 font-label-mono text-on-surface-variant">2024/05/20 14:32</td> -->
-                             <td class="px-5 py-4 font-label-mono text-on-surface-variant">{{ n.createdAt }}</td>
+                             <td class="px-5 py-4 font-label-mono text-on-surface-variant">{{ formatCreatedAt(n.createdAt) }}</td>
                         </tr>
                         
                     </tbody>
