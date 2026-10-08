@@ -49,7 +49,7 @@ export async function handleApiRequest(request, env) {
             headers: result.headers
         });
     } catch (error) {
-        console.error('Pages Worker API error:', error.message);
+        console.error('Cloudflare Worker API error:', error.message);
         return Response.json({
             message: '系統暫時無法處理請求，請稍後再試',
             code: 'INTERNAL_SERVER_ERROR'

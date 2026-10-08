@@ -3,11 +3,11 @@
 
 <template>
   <!-- Top Navigation Accent -->
-    <div class="h-2 w-full gradient-accent"></div>
+    <!-- <div class="h-2 w-full gradient-accent"></div> -->
 
     <!-- navbar -->
-    <Navbar />
-    <router-view />
+    <!-- <Navbar /> -->
+      <router-view />
     <!-- Footer -->
-    <Footer />
+    <!-- <Footer /> -->
 </template>

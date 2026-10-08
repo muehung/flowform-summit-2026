@@ -6,7 +6,12 @@
   "scripts": {
     "start": "node express/index.js",
     "dev": "node express/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "admin:create": "node scripts/createAdmin.js",
+    "seed:dashboard": "node scripts/seedDashboard.js",
+    "seed:dashboard:reset": "node scripts/resetDashboardSeed.js",
+    "seed:test-members": "node scripts/seedTestMembers.js",
+    "seed:test-members:reset": "node scripts/resetTestMembers.js",
+    "test": "node --test test/*.test.js"
   },
   "keywords": [],
   "author": "",

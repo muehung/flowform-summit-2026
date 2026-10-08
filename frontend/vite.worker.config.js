@@ -12,7 +12,7 @@ export default defineConfig({
         lib: {
             entry: path.resolve(
                 frontendDirectory,
-                '../backend/pagesfunction/index.js'
+                '../backend/worker/index.js'
             ),
             formats: ['es'],
             fileName: () => '_worker.js'

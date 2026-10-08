@@ -19,6 +19,15 @@ export function getRegistrationType(identity) {
     return registrationTypeMap[identity];
 }
 
+export function isValidPassword(password) {
+    return typeof password === 'string' &&
+        password.length >= 8 &&
+        password.length <= 20 &&
+        /[A-Z]/.test(password) &&
+        /[a-z]/.test(password) &&
+        /\d/.test(password);
+}
+
 export function validateRegistration(data) {
     const errors = {};
     for (const field of ['name', 'email', 'phone', 'identity', 'account', 'password']) {
@@ -38,8 +47,7 @@ export function validateRegistration(data) {
         errors.identity = '註冊身分選項不正確';
     }
     if (
-        typeof data.password === 'string' &&
-        (data.password.length < 8 || data.password.length > 20 || !/[A-Z]/.test(data.password) || !/[a-z]/.test(data.password) || !/\d/.test(data.password))
+        typeof data.password === 'string' && !isValidPassword(data.password)
     ) {
         errors.password = '密碼需為 8 到 20 個字元，且包含大小寫英文字母與數字';
     }

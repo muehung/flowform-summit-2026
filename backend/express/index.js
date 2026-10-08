@@ -4,7 +4,8 @@ import { createExpressApp } from './app.js';
 import { createSqliteDao } from './sqliteDao.js';
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
-const databaseFile = path.resolve(currentDirectory, '../data/index.db');
+const databaseFile = process.env.FLOWFORM_DATABASE_FILE ??
+    path.resolve(currentDirectory, '../data/index.db');
 const port = Number(process.env.PORT ?? 3000);
 const dao = createSqliteDao(databaseFile);
 const app = createExpressApp({ dao });
